@@ -1,11 +1,17 @@
 ---
 title: 'Nace Rumbo Mercante: el siguiente paso de Ingmaritima'
-description: 'Presentamos Rumbo Mercante, un espacio con recursos, herramientas y conocimiento operativo para la gente de mar. Qué encontrarás y qué viene a continuación.'
-category: actualidad
+description: Presentamos Rumbo Mercante, un espacio con recursos, herramientas y conocimiento operativo para la gente de mar. Qué encontrarás y qué viene a continuación.
 subcategory: novedades
 type: noticia
 date: 2026-10-29
-tags: [novedades, rumbo mercante]
+featured: false
+draft: false
+image: /img/articulos/1000734740.webp
+tags:
+  - novedades
+  - rumbo mercante
+printable: false
+category: actualidad
 ---
 
 Hoy arranca **Rumbo Mercante**, un espacio pensado para la gente de mar: estudiantes, cadetes, pasantes y oficiales que buscan información práctica y herramientas listas para usar.
