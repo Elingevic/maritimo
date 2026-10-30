@@ -1,0 +1,178 @@
+---
+import Icon from './Icon.astro';
+import { ADVERTISERS, AD_SLOTS, ADS_FREE } from '../config';
+
+const empty = Math.max(0, AD_SLOTS - ADVERTISERS.length);
+---
+<section class="section ads" aria-labelledby="ads-title">
+  <div class="container">
+    <div class="ads-head reveal">
+      <div>
+        <div class="kicker">Anunciantes</div>
+        <h2 id="ads-title">Empresas que acompañan a la gente de mar</h2>
+        <p>
+          Academias, centros de formación, navieras, agencias de tripulación, tiendas de equipamiento y servicios
+          marítimos que apoyan este proyecto.
+        </p>
+      </div>
+      {ADS_FREE && (
+        <div class="promo">
+          <span class="promo-badge">Lanzamiento</span>
+          <strong>Anúnciate gratis</strong>
+          <span>Durante el lanzamiento, los espacios para anunciantes no tienen coste.</span>
+        </div>
+      )}
+    </div>
+
+    <div class="slots">
+      {ADVERTISERS.map((ad) => (
+        <a href={ad.href} class="slot filled reveal" target="_blank" rel="sponsored noopener">
+          {ad.logo ? <img src={ad.logo} alt={ad.name} loading="lazy" /> : <strong>{ad.name}</strong>}
+          <span>{ad.description}</span>
+        </a>
+      ))}
+      {Array.from({ length: empty }).map(() => (
+        <a href="/anunciate/" class="slot empty reveal">
+          <span class="slot-icon"><Icon name="ship" size={26} /></span>
+          <strong>Tu marca aquí</strong>
+          <span>Llega a estudiantes, cadetes y oficiales de la marina mercante.</span>
+        </a>
+      ))}
+    </div>
+
+    <div class="ads-cta reveal">
+      <a href="/anunciate/" class="btn btn-brass"><Icon name="radar" /> Quiero anunciarme</a>
+      <span>¿Tienes una empresa del sector? Hablemos.</span>
+    </div>
+  </div>
+</section>
+
+<style>
+  .ads {
+    background:
+      radial-gradient(ellipse at 100% 0%, rgba(201, 154, 60, 0.12), transparent 50%),
+      var(--sand-100);
+    border-top: 1px solid var(--line);
+    padding-bottom: clamp(6rem, 12vw, 8rem);
+  }
+  .ads-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-bottom: 2.25rem;
+  }
+  .ads-head h2 {
+    margin: 0;
+  }
+  .ads-head p {
+    margin: 0.6rem 0 0;
+    color: var(--muted);
+    max-width: 62ch;
+  }
+  .promo {
+    display: grid;
+    gap: 0.25rem;
+    padding: 1.1rem 1.4rem;
+    border-radius: var(--radius);
+    background: var(--navy-900);
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 0.88rem;
+    max-width: 320px;
+  }
+  .promo strong {
+    color: var(--brass-light);
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+  }
+  .promo-badge {
+    justify-self: start;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    background: var(--brass);
+    color: var(--navy-950);
+  }
+  .slots {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+    gap: 1rem;
+  }
+  .slot {
+    min-height: 190px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 0.5rem;
+    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s;
+  }
+  .slot:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+  .filled {
+    background: var(--white);
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+  }
+  .filled img {
+    max-height: 70px;
+    max-width: 80%;
+    object-fit: contain;
+  }
+  .filled strong {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    color: var(--navy-900);
+  }
+  .filled span {
+    font-size: 0.88rem;
+    color: var(--muted);
+  }
+  .empty {
+    border: 2px dashed var(--sand-200);
+    background: rgba(255, 255, 255, 0.5);
+    color: var(--muted);
+  }
+  .empty:hover {
+    border-color: var(--brass);
+    background: var(--white);
+  }
+  .slot-icon {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--white);
+    color: var(--brass-dark);
+    border: 1px solid var(--line);
+  }
+  .empty strong {
+    color: var(--navy-800);
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+  }
+  .empty span:last-child {
+    font-size: 0.85rem;
+    line-height: 1.45;
+  }
+  .ads-cta {
+    margin-top: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+</style>

@@ -1,0 +1,58 @@
+---
+import type { Category } from '../config';
+interface Props {
+  cat: Category;
+  current?: string;
+}
+const { cat, current } = Astro.props;
+---
+<nav class="subnav no-print" aria-label={`Subcategorías de ${cat.name}`} style={`--accent: ${cat.color}`}>
+  <div class="container">
+    <ul>
+      <li><a href={`/${cat.id}/`} aria-current={!current ? 'page' : undefined}>Todo</a></li>
+      {cat.subcategories.map((s) => (
+        <li>
+          <a href={`/${cat.id}/${s.id}/`} aria-current={current === s.id ? 'page' : undefined}>{s.name}</a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</nav>
+
+<style>
+  .subnav {
+    background: var(--white);
+    border-bottom: 1px solid var(--line);
+    position: sticky;
+    top: var(--header-h);
+    z-index: 50;
+  }
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 0.25rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  a {
+    display: block;
+    padding: 1rem 0.9rem;
+    white-space: nowrap;
+    text-decoration: none;
+    color: var(--ink-soft);
+    font-weight: 500;
+    font-size: 0.93rem;
+    border-bottom: 2px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  a:hover {
+    color: var(--navy-800);
+  }
+  a[aria-current='page'] {
+    color: var(--navy-900);
+    border-bottom-color: var(--accent);
+    font-weight: 600;
+  }
+</style>

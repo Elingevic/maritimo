@@ -1,0 +1,245 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Icon from '../components/Icon.astro';
+import { SITE } from '../config';
+---
+<Base
+  title="Nosotros"
+  description="De cero a la mar: el camino real del marino mercante. La historia de Jhonny Castorani y el origen de Rumbo Mercante."
+>
+  <PageHero
+    kicker="Nosotros"
+    title="De cero a la mar: el camino real del marino mercante"
+    icon="anchor"
+    breadcrumbs={[{ href: '/nosotros/', label: 'Nosotros' }]}
+  />
+
+  <section class="section">
+    <div class="container about-grid">
+      <aside class="profile reveal">
+        <div class="portrait" aria-hidden="true">
+          <svg viewBox="0 0 200 200">
+            <defs>
+              <linearGradient id="pg" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#1f4675" />
+                <stop offset="1" stop-color="#0a1a2f" />
+              </linearGradient>
+            </defs>
+            <rect width="200" height="200" fill="url(#pg)" />
+            <g fill="none" stroke="rgba(255,255,255,0.08)">
+              <circle cx="100" cy="100" r="90" />
+              <circle cx="100" cy="100" r="60" />
+            </g>
+            <text x="100" y="118" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-size="56" fill="#e5c07b">JC</text>
+            <g fill="#c99a3c">
+              <rect x="62" y="150" width="76" height="5" rx="1" />
+              <rect x="62" y="160" width="76" height="5" rx="1" />
+            </g>
+          </svg>
+        </div>
+        <div class="profile-body">
+          <strong>{SITE.author}</strong>
+          <span>{SITE.authorRole}</span>
+          <ul>
+            <li><Icon name="book" size={18} /> Ingeniería Marítima</li>
+            <li><Icon name="clock" size={18} /> Graduado hace 8 años</li>
+            <li><Icon name="ship" size={18} /> Buques de pasajeros</li>
+            <li><Icon name="gauge" size={18} /> Departamento de Máquinas</li>
+          </ul>
+          <a href={SITE.legacyBlog} target="_blank" rel="noopener" class="btn btn-ghost btn-sm">
+            Blog Ingmaritima <Icon name="external" size={14} />
+          </a>
+        </div>
+      </aside>
+
+      <div class="prose story reveal">
+        <p class="dropcap">
+          Cuando decidí estudiar ingeniería marítima, no tenía antecedentes familiares en la marina mercante ni
+          conocidos a bordo que me guiaran. No sabía exactamente qué implicaba elegir entre cubierta y máquinas, cómo se
+          vivía en alta mar, qué horarios de trabajo y descanso me esperaban, ni qué debía meter en una maleta para
+          sobrevivir meses lejos de casa. Todo lo fui descubriendo a base de golpes de realidad, dudas constantes y
+          adaptación frente a cada obstáculo.
+        </p>
+        <p>
+          Afronté el proceso de aprender un oficio complejo, entender el funcionamiento real de los sistemas a bordo,
+          gestionar la fatiga de las guardias y trazar una ruta de desarrollo profesional por mérito propio.
+        </p>
+        <p>
+          Hoy, como <strong>{SITE.authorRole}</strong>, después de haberme graduado hace 8 años y con experiencia
+          consolidada a bordo de buques de pasajeros, miro atrás y entiendo exactamente qué necesita quien empieza.
+        </p>
+        <p>
+          Hace tiempo creé <a href={SITE.legacyBlog} target="_blank" rel="noopener">Ingmaritima.blogspot.com</a> con
+          las ganas de compartir lo poco o mucho que iba aprendiendo. Ese blog sigue vivo, pero la experiencia
+          acumulada, los galones ganados y las herramientas que hoy domino exigen dar el siguiente paso.
+        </p>
+
+        <blockquote>
+          <p>
+            <strong>Rumbo Mercante</strong> nace de esa evolución. Es el espacio que me hubiera gustado encontrar cuando
+            comencé: un puente directo entre la teoría de la academia y la realidad de la sala de máquinas y la cubierta.
+          </p>
+        </blockquote>
+
+        <p>
+          Mi objetivo hoy es simple: ahorrarte tropiezos, entregarte herramientas operativas listas para usar
+          (plantillas, checklists, guías técnicas y de inglés) y acompañarte en tu carrera, ya seas un pasante que pisa
+          un buque por primera vez o un oficial buscando seguir creciendo a bordo.
+        </p>
+        <p class="signoff">Bienvenido a tu guardia diaria. Nos vemos a bordo.</p>
+        <p class="signature">— {SITE.author}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight values-band">
+    <div class="container">
+      <div class="kicker">Lo que encontrarás aquí</div>
+      <div class="grid grid-3">
+        <div class="value reveal">
+          <Icon name="checklist" size={28} />
+          <h3>Herramientas operativas</h3>
+          <p>Plantillas, checklists y calculadoras pensadas para usarse a bordo, no para quedarse en un cajón.</p>
+        </div>
+        <div class="value reveal">
+          <Icon name="compass" size={28} />
+          <h3>Experiencia real</h3>
+          <p>Contenido escrito desde la sala de máquinas y la cubierta, con lo que funciona en el día a día.</p>
+        </div>
+        <div class="value reveal">
+          <Icon name="language" size={28} />
+          <h3>Inglés y carrera</h3>
+          <p>Vocabulario técnico, comunicación a bordo y claves para crecer profesionalmente por mérito propio.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight">
+    <div class="container cta-row">
+      <h2>¿Tienes una duda o quieres proponer un tema?</h2>
+      <a href="/contacto/" class="btn btn-brass"><Icon name="mail" /> Escríbeme</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .about-grid {
+    display: grid;
+    grid-template-columns: 300px minmax(0, 1fr);
+    gap: clamp(2rem, 6vw, 5rem);
+    align-items: start;
+  }
+  .profile {
+    position: sticky;
+    top: calc(var(--header-h) + 24px);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--white);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+  }
+  .portrait svg {
+    width: 100%;
+    height: auto;
+  }
+  .profile-body {
+    padding: 1.4rem;
+    display: grid;
+    gap: 0.2rem;
+  }
+  .profile-body > strong {
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    color: var(--navy-900);
+  }
+  .profile-body > span {
+    color: var(--brass-dark);
+    font-weight: 600;
+    font-size: 0.92rem;
+  }
+  .profile ul {
+    list-style: none;
+    padding: 0;
+    margin: 1.1rem 0 1.3rem;
+    display: grid;
+    gap: 0.6rem;
+    font-size: 0.93rem;
+    color: var(--ink-soft);
+  }
+  .profile li {
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+  }
+  .profile li :global(svg) {
+    color: var(--ocean);
+  }
+  .profile .btn {
+    justify-self: start;
+  }
+  .story {
+    font-size: 1.15rem;
+  }
+  .dropcap::first-letter {
+    float: left;
+    font-family: var(--font-display);
+    font-size: 4.2rem;
+    line-height: 0.85;
+    padding: 0.35rem 0.6rem 0 0;
+    color: var(--brass-dark);
+  }
+  .story blockquote {
+    font-size: 1.25rem;
+    font-family: var(--font-display);
+  }
+  .signoff {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1.4rem;
+    color: var(--navy-800);
+  }
+  .signature {
+    color: var(--muted);
+  }
+  .values-band {
+    background: var(--sand-100);
+    border-block: 1px solid var(--line);
+  }
+  .value {
+    padding: 1.8rem;
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--line);
+  }
+  .value :global(svg) {
+    color: var(--brass-dark);
+    margin-bottom: 1rem;
+  }
+  .value p {
+    color: var(--muted);
+    margin: 0;
+  }
+  .cta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    padding-bottom: 5rem;
+  }
+  .cta-row h2 {
+    margin: 0;
+    font-size: clamp(1.5rem, 2.8vw, 2rem);
+  }
+  @media (max-width: 860px) {
+    .about-grid {
+      grid-template-columns: 1fr;
+    }
+    .profile {
+      position: static;
+      max-width: 420px;
+    }
+  }
+</style>

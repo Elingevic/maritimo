@@ -1,0 +1,75 @@
+---
+import Base from '../../../layouts/Base.astro';
+import PageHero from '../../../components/PageHero.astro';
+import ArticleCard from '../../../components/ArticleCard.astro';
+import SubcategoryNav from '../../../components/SubcategoryNav.astro';
+import Icon from '../../../components/Icon.astro';
+import { CATEGORIES, type Category, type Subcategory } from '../../../config';
+import { getArticulos } from '../../../lib/utils';
+
+export function getStaticPaths() {
+  return CATEGORIES.flatMap((cat) =>
+    cat.subcategories
+      // /recursos/herramientas/ tiene su propia página
+      .filter((sub) => !(cat.id === 'recursos' && sub.id === 'herramientas'))
+      .map((sub) => ({ params: { categoria: cat.id, sub: sub.id }, props: { cat, sub } })),
+  );
+}
+
+const { cat, sub } = Astro.props as { cat: Category; sub: Subcategory };
+const articles = (await getArticulos(cat.id)).filter((a) => a.data.subcategory === sub.id);
+---
+<Base title={`${sub.name} · ${cat.short}`} description={sub.description}>
+  <PageHero
+    kicker={cat.name}
+    title={sub.name}
+    lead={sub.description}
+    icon={cat.icon}
+    accent={cat.color}
+    breadcrumbs={[
+      { href: `/${cat.id}/`, label: cat.short },
+      { href: `/${cat.id}/${sub.id}/`, label: sub.name },
+    ]}
+  />
+
+  <SubcategoryNav cat={cat} current={sub.id} />
+
+  <section class="section-tight list">
+    <div class="container">
+      {articles.length > 0 ? (
+        <div class="grid grid-3">
+          {articles.map((a) => <ArticleCard article={a} showCategory={false} />)}
+        </div>
+      ) : (
+        <div class="empty">
+          <Icon name="radar" size={40} />
+          <h2>Próximamente</h2>
+          <p>Todavía no hay publicaciones en {sub.name}. Vuelve pronto o cuéntanos qué te gustaría leer aquí.</p>
+          <a href="/contacto/" class="btn btn-brass">Sugerir un tema</a>
+        </div>
+      )}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .list {
+    padding-bottom: 6rem;
+  }
+  .empty {
+    text-align: center;
+    padding: 4rem 1.5rem;
+    border: 1px dashed var(--sand-200);
+    border-radius: var(--radius-lg);
+    background: var(--white);
+  }
+  .empty :global(svg) {
+    margin: 0 auto 1rem;
+    color: var(--brass-dark);
+  }
+  .empty p {
+    color: var(--muted);
+    max-width: 46ch;
+    margin: 0 auto 1.5rem;
+  }
+</style>

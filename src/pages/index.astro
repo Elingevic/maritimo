@@ -1,0 +1,453 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import Advertisers from '../components/Advertisers.astro';
+import { SITE, CATEGORIES, getCategory, getSubcategory } from '../config';
+import { getArticulos, articleUrl, formatDate, readingTime, TYPE_LABEL } from '../lib/utils';
+
+const all = await getArticulos();
+const featured = all.filter((a) => a.data.featured).slice(0, 3);
+const featuredIds = new Set(featured.map((a) => a.id));
+// Últimos posts: los más recientes que no aparecen ya en destacados
+const latest = all.filter((a) => !featuredIds.has(a.id)).slice(0, 3);
+---
+<Base>
+  <!-- 1. HERO: eslogan + imagen de marina mercante -->
+  <section class="hero on-dark">
+    <picture class="hero-img" aria-hidden="true">
+      <source media="(max-width: 900px)" srcset="/img/hero-sm.jpg" />
+      <img src="/img/hero.jpg" alt="" fetchpriority="high" decoding="async" />
+    </picture>
+    <div class="hero-shade" aria-hidden="true"></div>
+
+    <div class="container hero-inner">
+      <div class="kicker">{SITE.name} · Cubierta y Máquinas</div>
+      <h1>
+        Recursos, herramientas y conocimiento operativo para el día a día de la <em>gente de mar.</em>
+      </h1>
+      <p class="hero-lead">
+        Plantillas, checklists, guías técnicas e inglés marítimo escritos desde la experiencia real a bordo. Para el
+        cadete que pisa un buque por primera vez y para el oficial que quiere seguir creciendo.
+      </p>
+      <div class="hero-actions">
+        <a href="#secciones" class="btn btn-brass"><Icon name="compass" /> Explorar secciones</a>
+        <a href="/nosotros/" class="btn btn-ghost">Conoce la historia <Icon name="arrow" /></a>
+      </div>
+    </div>
+
+    <svg class="hero-wave" viewBox="0 0 1440 80" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0 40 C 240 80 480 0 720 40 S 1200 80 1440 40 V80 H0Z" fill="var(--sand-50)" />
+    </svg>
+  </section>
+
+  <!-- 2. SECCIONES con sus subcategorías -->
+  <section class="section" id="secciones">
+    <div class="container">
+      <div class="section-head reveal">
+        <div>
+          <div class="kicker">Carta de navegación</div>
+          <h2>Cuatro secciones, un mismo rumbo</h2>
+          <p>
+            Cada sección se divide en subcategorías que te llevan directo a los artículos que necesitas, estés en tierra
+            preparando tu embarque o en plena guardia.
+          </p>
+        </div>
+      </div>
+
+      <div class="cats">
+        {CATEGORIES.map((c, i) => (
+          <article class="cat reveal" style={`--accent: ${c.color}`}>
+            <a href={`/${c.id}/`} class="cat-main">
+              <span class="cat-num">0{i + 1}</span>
+              <span class="cat-icon"><Icon name={c.icon} size={28} /></span>
+              <h3>{c.name}</h3>
+              <p>{c.description}</p>
+            </a>
+            <div class="cat-subs">
+              <span class="cat-subs-label">Subcategorías</span>
+              <ul>
+                {c.subcategories.map((s) => (
+                  <li><a href={`/${c.id}/${s.id}/`}>{s.name}</a></li>
+                ))}
+              </ul>
+            </div>
+            <a href={`/${c.id}/`} class="link-arrow cat-go">Explorar {c.short} <span>→</span></a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. DESTACADOS en columna de 3 -->
+  {featured.length > 0 && (
+    <section class="section featured-band">
+      <div class="container">
+        <div class="section-head reveal">
+          <div>
+            <div class="kicker">Destacados</div>
+            <h2>Lo más útil para empezar</h2>
+          </div>
+        </div>
+        <div class="featured">
+          {featured.map((a, i) => {
+            const cat = getCategory(a.data.category)!;
+            const sub = getSubcategory(a.data.category, a.data.subcategory)!;
+            return (
+              <a href={articleUrl(a)} class="feat reveal" style={`--accent: ${cat.color}`}>
+                <span class="feat-num">{String(i + 1).padStart(2, '0')}</span>
+                <span class="feat-icon"><Icon name={cat.icon} size={30} /></span>
+                <span class="feat-body">
+                  <span class="feat-meta">
+                    <span class="feat-cat">{cat.short} · {sub.name}</span>
+                    <span class="tag">{TYPE_LABEL[a.data.type]}</span>
+                  </span>
+                  <strong>{a.data.title}</strong>
+                  <span class="feat-desc">{a.data.description}</span>
+                  <span class="feat-foot">
+                    {formatDate(a.data.date)} · {readingTime(a.body)} min de lectura
+                  </span>
+                </span>
+                <span class="feat-arrow"><Icon name="arrow" size={22} /></span>
+              </a>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- 4. ÚLTIMOS POSTS en fila de 3 -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head reveal">
+        <div>
+          <div class="kicker">Bitácora</div>
+          <h2>Últimas publicaciones</h2>
+        </div>
+        <a href="/publicaciones/" class="link-arrow">Ver todas las publicaciones <span>→</span></a>
+      </div>
+      <div class="grid latest">
+        {latest.map((a) => <ArticleCard article={a} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. ANUNCIANTES -->
+  <Advertisers />
+</Base>
+
+<style>
+  /* ---------- 1. Hero ---------- */
+  .hero {
+    position: relative;
+    min-height: min(88vh, 820px);
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    padding: clamp(4rem, 10vw, 7rem) 0 clamp(6rem, 12vw, 9rem);
+    background: var(--navy-900);
+  }
+  .hero-img img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 65% center;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-img img {
+      animation: zoom 24s ease-out both;
+    }
+  }
+  @keyframes zoom {
+    from {
+      transform: scale(1.08);
+    }
+    to {
+      transform: scale(1);
+    }
+  }
+  .hero-shade {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, rgba(6, 17, 31, 0.94) 0%, rgba(6, 17, 31, 0.82) 38%, rgba(6, 17, 31, 0.35) 75%, rgba(6, 17, 31, 0.2) 100%),
+      linear-gradient(0deg, rgba(6, 17, 31, 0.6) 0%, transparent 40%);
+  }
+  .hero-inner {
+    position: relative;
+  }
+  .hero h1 {
+    font-size: clamp(2.1rem, 4.6vw, 3.7rem);
+    max-width: 20ch;
+    margin-bottom: 1.4rem;
+    text-shadow: 0 2px 30px rgba(0, 0, 0, 0.35);
+  }
+  .hero h1 em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--brass-light);
+  }
+  .hero-lead {
+    font-size: clamp(1.05rem, 1.6vw, 1.22rem);
+    color: rgba(255, 255, 255, 0.82);
+    max-width: 52ch;
+    margin-bottom: 2.2rem;
+  }
+  .hero-actions {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+  }
+  .hero-wave {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    width: 100%;
+    height: 70px;
+  }
+  @media (max-width: 700px) {
+    .hero-shade {
+      background: linear-gradient(180deg, rgba(6, 17, 31, 0.75), rgba(6, 17, 31, 0.92));
+    }
+  }
+
+  /* ---------- 2. Secciones ---------- */
+  .cats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+  }
+  .cat {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .cat::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 4px;
+    background: var(--accent);
+  }
+  .cat:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+  .cat-main {
+    display: block;
+    padding: 1.8rem 1.6rem 0;
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+  }
+  .cat-num {
+    position: absolute;
+    top: 1.4rem;
+    right: 1.4rem;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  .cat-icon {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: color-mix(in srgb, var(--accent) 14%, white);
+    color: color-mix(in srgb, var(--accent) 80%, black);
+    margin-bottom: 1.3rem;
+  }
+  .cat h3 {
+    font-size: 1.3rem;
+  }
+  .cat-main:hover h3 {
+    color: var(--ocean);
+  }
+  .cat-main p {
+    color: var(--muted);
+    font-size: 0.93rem;
+    line-height: 1.6;
+    margin-bottom: 1.2rem;
+  }
+  .cat-subs {
+    padding: 1rem 1.6rem;
+    border-top: 1px dashed var(--line);
+    flex: 1;
+  }
+  .cat-subs-label {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.6rem;
+  }
+  .cat-subs ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .cat-subs a {
+    display: inline-block;
+    padding: 0.35rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    text-decoration: none;
+    color: color-mix(in srgb, var(--accent) 70%, black);
+    background: color-mix(in srgb, var(--accent) 10%, white);
+    border: 1px solid color-mix(in srgb, var(--accent) 22%, white);
+    transition: background-color 0.2s, color 0.2s;
+  }
+  .cat-subs a:hover {
+    background: var(--accent);
+    color: var(--white);
+  }
+  .cat-go {
+    padding: 1rem 1.6rem 1.4rem;
+  }
+  @media (max-width: 1100px) {
+    .cats {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 600px) {
+    .cats {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ---------- 3. Destacados (columna de 3) ---------- */
+  .featured-band {
+    background: var(--sand-100);
+    border-block: 1px solid var(--line);
+  }
+  .featured {
+    display: grid;
+    gap: 1rem;
+  }
+  .feat {
+    display: grid;
+    grid-template-columns: auto auto 1fr auto;
+    gap: 1.5rem;
+    align-items: center;
+    padding: 1.6rem 1.8rem;
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--accent);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .feat:hover {
+    transform: translateX(6px);
+    box-shadow: var(--shadow-lg);
+  }
+  .feat-num {
+    font-family: var(--font-display);
+    font-size: 2.6rem;
+    line-height: 1;
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--brass);
+  }
+  .feat-icon {
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 18px;
+    background: color-mix(in srgb, var(--accent) 14%, white);
+    color: color-mix(in srgb, var(--accent) 80%, black);
+  }
+  .feat-body {
+    display: grid;
+    gap: 0.4rem;
+  }
+  .feat-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    align-items: center;
+  }
+  .feat-cat {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: color-mix(in srgb, var(--accent) 75%, black);
+  }
+  .feat strong {
+    font-family: var(--font-display);
+    font-size: clamp(1.2rem, 2vw, 1.5rem);
+    font-weight: 600;
+    color: var(--navy-900);
+    line-height: 1.25;
+  }
+  .feat:hover strong {
+    color: var(--ocean);
+  }
+  .feat-desc {
+    color: var(--muted);
+    font-size: 0.96rem;
+    line-height: 1.55;
+    max-width: 80ch;
+  }
+  .feat-foot {
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  .feat-arrow {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    color: var(--navy-700);
+    transition: background-color 0.2s, color 0.2s;
+  }
+  .feat:hover .feat-arrow {
+    background: var(--navy-800);
+    color: var(--white);
+  }
+  @media (max-width: 760px) {
+    .feat {
+      grid-template-columns: auto 1fr;
+      gap: 1rem;
+      padding: 1.3rem;
+    }
+    .feat-icon,
+    .feat-arrow {
+      display: none;
+    }
+    .feat-num {
+      font-size: 2rem;
+      align-self: start;
+    }
+  }
+
+  /* ---------- 4. Últimos (fila de 3) ---------- */
+  .latest {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  @media (max-width: 960px) {
+    .latest {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

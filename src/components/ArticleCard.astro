@@ -1,0 +1,119 @@
+---
+import { getCategory, getSubcategory } from '../config';
+import { articleUrl, formatDate, readingTime, TYPE_LABEL, type Articulo } from '../lib/utils';
+import Icon from './Icon.astro';
+
+interface Props {
+  article: Articulo;
+  showCategory?: boolean;
+}
+const { article, showCategory = true } = Astro.props;
+const cat = getCategory(article.data.category)!;
+const sub = getSubcategory(article.data.category, article.data.subcategory);
+const mins = readingTime(article.body);
+---
+<article class="card reveal" style={`--accent: ${cat.color}`}>
+  <a href={articleUrl(article)} class="card-link">
+    <div class="card-top">
+      <span class="card-icon"><Icon name={cat.icon} size={20} /></span>
+      <span class="tag">{TYPE_LABEL[article.data.type]}</span>
+      {article.data.download && (
+        <span class="tag" title="Incluye descarga"><Icon name="download" size={12} /> Descarga</span>
+      )}
+    </div>
+    <h3>{article.data.title}</h3>
+    <p>{article.data.description}</p>
+    <div class="card-meta">
+      <span class="cat">{showCategory ? `${cat.short} · ${sub?.name}` : sub?.name}</span>
+      <span>{formatDate(article.data.date)}</span>
+      <span class="mins"><Icon name="clock" size={13} /> {mins} min</span>
+    </div>
+  </a>
+</article>
+
+<style>
+  .card {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 3px;
+    background: var(--accent);
+    transform: scaleX(0.15);
+    transform-origin: left;
+    transition: transform 0.35s ease;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: transparent;
+  }
+  .card:hover::before {
+    transform: scaleX(1);
+  }
+  .card-link {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 1.6rem;
+    text-decoration: none;
+    color: inherit;
+  }
+  .card-top {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.1rem;
+  }
+  .card-icon {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--accent) 14%, white);
+    color: color-mix(in srgb, var(--accent) 80%, black);
+    margin-right: auto;
+  }
+  h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.6rem;
+    transition: color 0.2s;
+  }
+  .card:hover h3 {
+    color: var(--ocean);
+  }
+  p {
+    color: var(--muted);
+    font-size: 0.96rem;
+    line-height: 1.6;
+    margin-bottom: 1.4rem;
+    flex: 1;
+  }
+  .card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+    border-top: 1px solid var(--line);
+    padding-top: 1rem;
+  }
+  .cat {
+    font-weight: 600;
+    color: color-mix(in srgb, var(--accent) 75%, black);
+  }
+  .mins {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-left: auto;
+  }
+</style>

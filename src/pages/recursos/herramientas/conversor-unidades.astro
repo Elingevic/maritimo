@@ -1,0 +1,333 @@
+---
+import Base from '../../../layouts/Base.astro';
+import PageHero from '../../../components/PageHero.astro';
+import Icon from '../../../components/Icon.astro';
+
+// Factores respecto a la unidad base de cada magnitud
+const GROUPS = [
+  {
+    id: 'presion',
+    name: 'Presión',
+    icon: 'gauge',
+    base: 'bar',
+    units: [
+      { id: 'bar', name: 'bar', f: 1 },
+      { id: 'psi', name: 'psi', f: 0.0689475729 },
+      { id: 'kpa', name: 'kPa', f: 0.01 },
+      { id: 'mpa', name: 'MPa', f: 10 },
+      { id: 'kgcm2', name: 'kg/cm²', f: 0.980665 },
+      { id: 'atm', name: 'atm', f: 1.01325 },
+      { id: 'mbar', name: 'mbar', f: 0.001 },
+      { id: 'mmhg', name: 'mmHg', f: 0.00133322368 },
+      { id: 'mh2o', name: 'm.c.a. (mH₂O)', f: 0.0980665 },
+    ],
+  },
+  {
+    id: 'temperatura',
+    name: 'Temperatura',
+    icon: 'gauge',
+    base: 'c',
+    units: [
+      { id: 'c', name: '°C', f: 0 },
+      { id: 'f', name: '°F', f: 0 },
+      { id: 'k', name: 'K', f: 0 },
+    ],
+  },
+  {
+    id: 'potencia',
+    name: 'Potencia',
+    icon: 'gauge',
+    base: 'kw',
+    units: [
+      { id: 'kw', name: 'kW', f: 1 },
+      { id: 'mw', name: 'MW', f: 1000 },
+      { id: 'hp', name: 'HP (mecánico)', f: 0.745699872 },
+      { id: 'cv', name: 'CV / PS (métrico)', f: 0.73549875 },
+      { id: 'btuh', name: 'BTU/h', f: 0.00029307107 },
+    ],
+  },
+  {
+    id: 'volumen',
+    name: 'Volumen',
+    icon: 'gauge',
+    base: 'm3',
+    units: [
+      { id: 'm3', name: 'm³', f: 1 },
+      { id: 'l', name: 'litros', f: 0.001 },
+      { id: 'bbl', name: 'barriles (bbl)', f: 0.158987295 },
+      { id: 'galus', name: 'galones US', f: 0.003785411784 },
+      { id: 'galuk', name: 'galones imperiales', f: 0.00454609 },
+      { id: 'ft3', name: 'pies³', f: 0.028316846592 },
+    ],
+  },
+  {
+    id: 'caudal',
+    name: 'Caudal',
+    icon: 'gauge',
+    base: 'm3h',
+    units: [
+      { id: 'm3h', name: 'm³/h', f: 1 },
+      { id: 'lmin', name: 'L/min', f: 0.06 },
+      { id: 'ls', name: 'L/s', f: 3.6 },
+      { id: 'gpm', name: 'GPM (US)', f: 0.2271247 },
+      { id: 'bblh', name: 'bbl/h', f: 0.158987295 },
+    ],
+  },
+  {
+    id: 'distancia',
+    name: 'Distancia',
+    icon: 'compass',
+    base: 'm',
+    units: [
+      { id: 'nm', name: 'millas náuticas', f: 1852 },
+      { id: 'cable', name: 'cables', f: 185.2 },
+      { id: 'km', name: 'km', f: 1000 },
+      { id: 'm', name: 'metros', f: 1 },
+      { id: 'mi', name: 'millas terrestres', f: 1609.344 },
+      { id: 'brazas', name: 'brazas (fathoms)', f: 1.8288 },
+      { id: 'ft', name: 'pies', f: 0.3048 },
+      { id: 'in', name: 'pulgadas', f: 0.0254 },
+    ],
+  },
+  {
+    id: 'velocidad',
+    name: 'Velocidad',
+    icon: 'compass',
+    base: 'ms',
+    units: [
+      { id: 'kn', name: 'nudos', f: 0.514444444 },
+      { id: 'kmh', name: 'km/h', f: 0.277777778 },
+      { id: 'ms', name: 'm/s', f: 1 },
+      { id: 'mph', name: 'mph', f: 0.44704 },
+    ],
+  },
+  {
+    id: 'masa',
+    name: 'Masa',
+    icon: 'anchor',
+    base: 'kg',
+    units: [
+      { id: 't', name: 'toneladas métricas', f: 1000 },
+      { id: 'kg', name: 'kg', f: 1 },
+      { id: 'lb', name: 'libras', f: 0.45359237 },
+      { id: 'lt', name: 'toneladas largas (UK)', f: 1016.0469088 },
+      { id: 'st', name: 'toneladas cortas (US)', f: 907.18474 },
+    ],
+  },
+  {
+    id: 'par',
+    name: 'Par de apriete',
+    icon: 'toolbox',
+    base: 'nm',
+    units: [
+      { id: 'nm', name: 'N·m', f: 1 },
+      { id: 'kgm', name: 'kgf·m', f: 9.80665 },
+      { id: 'lbft', name: 'lbf·ft', f: 1.3558179483 },
+      { id: 'lbin', name: 'lbf·in', f: 0.112984829 },
+    ],
+  },
+];
+---
+<Base
+  title="Conversor de unidades marítimas"
+  description="Convierte presión, temperatura, potencia, volumen, caudal, distancia, velocidad, masa y par: las unidades que se usan a bordo."
+>
+  <PageHero
+    kicker="Herramienta · Sala de máquinas · Puente"
+    title="Conversor de unidades marítimas"
+    lead="Escribe un valor y obtén al instante su equivalencia en todas las unidades. Pensado para los manuales en psi, los planos en pulgadas y las órdenes en nudos."
+    icon="swap"
+    accent="var(--c-recursos)"
+    breadcrumbs={[{ href: '/recursos/', label: 'Recursos' }, { href: '/recursos/herramientas/', label: 'Herramientas' }, { href: '/recursos/herramientas/conversor-unidades/', label: 'Conversor' }]}
+  />
+
+  <section class="section-tight">
+    <div class="container conv">
+      <div class="tabs" role="tablist" aria-label="Magnitud">
+        {GROUPS.map((g, i) => (
+          <button role="tab" class="tab" aria-selected={i === 0 ? 'true' : 'false'} data-group={g.id}>
+            {g.name}
+          </button>
+        ))}
+      </div>
+
+      <div class="panel">
+        <div class="inputs">
+          <div class="field">
+            <label for="val">Valor</label>
+            <input class="input big-input" id="val" type="number" inputmode="decimal" step="any" value="1" />
+          </div>
+          <div class="field">
+            <label for="unit">Unidad de origen</label>
+            <select class="select" id="unit"></select>
+          </div>
+        </div>
+        <ul class="out" id="out" aria-live="polite"></ul>
+      </div>
+
+      <div class="ref">
+        <h2>Referencias rápidas</h2>
+        <div class="grid grid-3">
+          <div class="refcard"><strong>1 bar</strong><span>≈ 14,5 psi ≈ 1,02 kg/cm²</span></div>
+          <div class="refcard"><strong>1 milla náutica</strong><span>= 1852 m = 10 cables</span></div>
+          <div class="refcard"><strong>1 nudo</strong><span>= 1 milla náutica por hora ≈ 1,852 km/h</span></div>
+          <div class="refcard"><strong>1 kW</strong><span>≈ 1,341 HP ≈ 1,360 CV</span></div>
+          <div class="refcard"><strong>1 barril</strong><span>≈ 159 litros ≈ 42 galones US</span></div>
+          <div class="refcard"><strong>1 braza</strong><span>= 6 pies ≈ 1,83 m</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script define:vars={{ GROUPS }}>
+  const tabs = document.querySelectorAll('.tab');
+  const val = document.getElementById('val');
+  const unitSel = document.getElementById('unit');
+  const out = document.getElementById('out');
+  let group = GROUPS[0];
+
+  const nf = (n) => {
+    if (!isFinite(n)) return '—';
+    const abs = Math.abs(n);
+    const digits = abs === 0 ? 0 : abs >= 1000 ? 2 : abs >= 1 ? 4 : 6;
+    return n.toLocaleString('es-ES', { maximumFractionDigits: digits });
+  };
+
+  const toC = (v, u) => (u === 'c' ? v : u === 'f' ? ((v - 32) * 5) / 9 : v - 273.15);
+  const fromC = (c, u) => (u === 'c' ? c : u === 'f' ? (c * 9) / 5 + 32 : c + 273.15);
+
+  function setGroup(id) {
+    group = GROUPS.find((g) => g.id === id);
+    tabs.forEach((t) => t.setAttribute('aria-selected', String(t.dataset.group === id)));
+    unitSel.innerHTML = group.units.map((u) => `<option value="${u.id}">${u.name}</option>`).join('');
+    render();
+  }
+
+  function render() {
+    const v = parseFloat(val.value);
+    const from = group.units.find((u) => u.id === unitSel.value);
+    out.innerHTML = group.units
+      .filter((u) => u.id !== from.id)
+      .map((u) => {
+        let r;
+        if (isNaN(v)) r = NaN;
+        else if (group.id === 'temperatura') r = fromC(toC(v, from.id), u.id);
+        else r = (v * from.f) / u.f;
+        return `<li><span class="num">${nf(r)}</span><span class="unit">${u.name}</span></li>`;
+      })
+      .join('');
+  }
+
+  tabs.forEach((t) => t.addEventListener('click', () => setGroup(t.dataset.group)));
+  val.addEventListener('input', render);
+  unitSel.addEventListener('change', render);
+  setGroup(GROUPS[0].id);
+</script>
+
+<style>
+  .conv {
+    padding-bottom: 4rem;
+  }
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1.25rem;
+  }
+  .tab {
+    font: 500 0.92rem/1 var(--font-body);
+    padding: 0.7rem 1.1rem;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--white);
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tab:hover {
+    border-color: var(--navy-600);
+  }
+  .tab[aria-selected='true'] {
+    background: var(--navy-800);
+    border-color: var(--navy-800);
+    color: var(--white);
+  }
+  .panel {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+  }
+  .inputs {
+    display: grid;
+    gap: 1rem;
+    align-content: start;
+    padding: 1.25rem;
+    background: var(--sand-100);
+    border-radius: var(--radius);
+  }
+  .big-input {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    padding: 0.5rem 0.9rem;
+  }
+  .out {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.75rem;
+    align-content: start;
+  }
+  .out :global(li) {
+    padding: 1rem 1.1rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    display: grid;
+    gap: 0.15rem;
+  }
+  .out :global(.num) {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    color: var(--navy-900);
+    font-variant-numeric: tabular-nums;
+    word-break: break-all;
+  }
+  .out :global(.unit) {
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  .ref {
+    margin-top: 3rem;
+  }
+  .ref h2 {
+    font-size: 1.5rem;
+  }
+  .refcard {
+    padding: 1.1rem 1.25rem;
+    border-radius: var(--radius);
+    background: var(--navy-900);
+    display: grid;
+    gap: 0.2rem;
+  }
+  .refcard strong {
+    color: var(--brass-light);
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+  }
+  .refcard span {
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 0.93rem;
+  }
+  @media (max-width: 760px) {
+    .panel {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

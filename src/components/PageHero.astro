@@ -1,0 +1,100 @@
+---
+import Icon from './Icon.astro';
+interface Props {
+  kicker?: string;
+  title: string;
+  lead?: string;
+  icon?: string;
+  accent?: string;
+  breadcrumbs?: { href: string; label: string }[];
+}
+const { kicker, title, lead, icon, accent = 'var(--brass)', breadcrumbs } = Astro.props;
+---
+<section class="page-hero on-dark" style={`--accent: ${accent}`}>
+  <div class="hero-deco" aria-hidden="true">
+    <svg viewBox="0 0 400 400">
+      <g fill="none" stroke="currentColor" stroke-width="1">
+        <circle cx="200" cy="200" r="190" />
+        <circle cx="200" cy="200" r="140" stroke-dasharray="2 6" />
+        <circle cx="200" cy="200" r="90" />
+        <path d="M200 0v400M0 200h400M59 59l282 282M341 59L59 341" opacity="0.5" />
+      </g>
+    </svg>
+  </div>
+  <div class="container hero-inner">
+    {breadcrumbs && (
+      <nav class="crumbs" aria-label="Ruta de navegación">
+        <a href="/">Inicio</a>
+        {breadcrumbs.map((b) => (
+          <Fragment>
+            <span aria-hidden="true">/</span>
+            <a href={b.href}>{b.label}</a>
+          </Fragment>
+        ))}
+      </nav>
+    )}
+    {icon && <span class="hero-icon"><Icon name={icon} size={28} /></span>}
+    {kicker && <div class="kicker">{kicker}</div>}
+    <h1>{title}</h1>
+    {lead && <p class="lead">{lead}</p>}
+    <slot />
+  </div>
+</section>
+
+<style>
+  .page-hero {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(3rem, 7vw, 5rem) 0 clamp(3.5rem, 8vw, 5.5rem);
+    background:
+      radial-gradient(ellipse at 85% 0%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 55%),
+      linear-gradient(180deg, var(--navy-900), var(--navy-800));
+  }
+  .hero-deco {
+    position: absolute;
+    right: -120px;
+    top: 50%;
+    width: 520px;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.07);
+    pointer-events: none;
+  }
+  .hero-inner {
+    position: relative;
+  }
+  .crumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    margin-bottom: 1.6rem;
+    color: rgba(255, 255, 255, 0.4);
+  }
+  .crumbs a {
+    color: rgba(255, 255, 255, 0.65) !important;
+    text-decoration: none;
+  }
+  .crumbs a:hover {
+    color: var(--white) !important;
+  }
+  .hero-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: color-mix(in srgb, var(--accent) 22%, transparent);
+    color: color-mix(in srgb, var(--accent) 60%, white);
+    border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+    margin-bottom: 1.4rem;
+  }
+  h1 {
+    max-width: 22ch;
+  }
+  .lead {
+    font-size: clamp(1.05rem, 1.6vw, 1.2rem);
+    max-width: 62ch;
+    color: rgba(255, 255, 255, 0.75);
+    margin: 0;
+  }
+</style>

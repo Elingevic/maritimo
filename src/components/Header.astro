@@ -1,0 +1,155 @@
+---
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import { NAV } from '../config';
+
+const path = Astro.url.pathname;
+const isActive = (href: string) => path === href || path.startsWith(href);
+---
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="/" class="brand" aria-label="Rumbo Mercante — inicio">
+      <Logo light size={38} />
+    </a>
+
+    <nav class="nav" aria-label="Principal">
+      <ul id="nav-list">
+        {NAV.map((item) => (
+          <li>
+            <a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
+              {item.label}
+            </a>
+          </li>
+        ))}
+        <li class="nav-cta">
+          <a href="/contacto/" class="btn btn-brass btn-sm">Contacto</a>
+        </li>
+      </ul>
+    </nav>
+
+    <button class="menu-toggle" aria-expanded="false" aria-controls="nav-list" aria-label="Abrir menú">
+      <span class="i-open"><Icon name="menu" size={26} /></span>
+      <span class="i-close"><Icon name="close" size={26} /></span>
+    </button>
+  </div>
+</header>
+
+<script>
+  const header = document.querySelector('.site-header');
+  const toggle = document.querySelector<HTMLButtonElement>('.menu-toggle');
+  toggle?.addEventListener('click', () => {
+    const open = header?.classList.toggle('is-open') ?? false;
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
+    document.body.style.overflow = open ? 'hidden' : '';
+  });
+  const onScroll = () => header?.classList.toggle('is-scrolled', window.scrollY > 8);
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+</script>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10, 26, 47, 0.97);
+    backdrop-filter: saturate(1.4) blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    transition: box-shadow 0.25s ease;
+  }
+  .site-header.is-scrolled {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+  }
+  .header-inner {
+    height: var(--header-h);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+  .brand {
+    text-decoration: none;
+    flex: none;
+  }
+  .nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  .nav a:not(.btn) {
+    display: block;
+    padding: 0.5rem 0.8rem;
+    color: rgba(255, 255, 255, 0.78);
+    text-decoration: none;
+    font-size: 0.93rem;
+    font-weight: 500;
+    border-radius: 999px;
+    transition: color 0.2s, background-color 0.2s;
+  }
+  .nav a:not(.btn):hover {
+    color: var(--white);
+    background: rgba(255, 255, 255, 0.07);
+  }
+  .nav a[aria-current='page'] {
+    color: var(--brass-light);
+  }
+  .nav-cta {
+    margin-left: 0.6rem;
+  }
+  .menu-toggle {
+    display: none;
+    background: none;
+    border: 0;
+    color: var(--white);
+    padding: 0.4rem;
+    cursor: pointer;
+  }
+  .i-close {
+    display: none;
+  }
+
+  @media (max-width: 920px) {
+    .menu-toggle {
+      display: block;
+    }
+    .nav ul {
+      position: fixed;
+      inset: var(--header-h) 0 0 0;
+      background: var(--navy-900);
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+      padding: 1.5rem 1.25rem 2rem;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+      overflow-y: auto;
+    }
+    .nav a:not(.btn) {
+      font-size: 1.15rem;
+      padding: 1rem 0.5rem;
+      border-radius: 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .nav-cta {
+      margin: 1.5rem 0 0;
+    }
+    .nav-cta .btn {
+      width: 100%;
+      padding: 1rem;
+      font-size: 1rem;
+    }
+    .site-header.is-open .nav ul {
+      transform: none;
+    }
+    .site-header.is-open .i-open {
+      display: none;
+    }
+    .site-header.is-open .i-close {
+      display: block;
+    }
+  }
+</style>

@@ -1,0 +1,50 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import { CATEGORIES } from '../config';
+---
+<Base title="Página no encontrada">
+  <section class="lost on-dark">
+    <div class="container-narrow">
+      <div class="code">404</div>
+      <div class="kicker">Fuera de rumbo</div>
+      <h1>Esta página se ha ido a la deriva</h1>
+      <p>No encontramos lo que buscabas. Puede que el enlace haya cambiado o que la página ya no exista. Retoma el rumbo desde aquí:</p>
+      <div class="links">
+        <a href="/" class="btn btn-brass"><Icon name="compass" /> Volver al inicio</a>
+        {CATEGORIES.map((c) => <a href={`/${c.id}/`} class="btn btn-ghost">{c.short}</a>)}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .lost {
+    padding: clamp(4rem, 12vw, 8rem) 0 clamp(6rem, 14vw, 10rem);
+    text-align: center;
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(42, 100, 150, 0.4), transparent 60%),
+      var(--navy-900);
+  }
+  .code {
+    font-family: var(--font-display);
+    font-size: clamp(6rem, 20vw, 11rem);
+    line-height: 1;
+    color: transparent;
+    -webkit-text-stroke: 2px var(--brass);
+    margin-bottom: 1rem;
+  }
+  .kicker {
+    justify-content: center;
+  }
+  p {
+    max-width: 52ch;
+    margin: 0 auto 2rem;
+  }
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    justify-content: center;
+  }
+</style>

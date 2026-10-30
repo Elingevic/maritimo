@@ -1,0 +1,267 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Icon from '../components/Icon.astro';
+import { SITE } from '../config';
+
+const action = SITE.formspreeId ? `https://formspree.io/f/${SITE.formspreeId}` : '';
+---
+<Base title="Contacto" description="Envía sugerencias, consultas o solicitudes de plantillas específicas a Rumbo Mercante.">
+  <PageHero
+    kicker="Contacto"
+    title="Hablemos a bordo"
+    lead="¿Una sugerencia, una consulta técnica o una plantilla que te haría la vida más fácil? Escríbeme. Leo todos los mensajes."
+    icon="mail"
+    breadcrumbs={[{ href: '/contacto/', label: 'Contacto' }]}
+  />
+
+  <section class="section">
+    <div class="container contact-grid">
+      <form
+        class="form reveal"
+        id="contact-form"
+        method="POST"
+        action={action || undefined}
+        data-email={SITE.contactEmail}
+      >
+        <div class="row">
+          <div class="field">
+            <label for="nombre">Nombre</label>
+            <input class="input" id="nombre" name="nombre" required autocomplete="name" />
+          </div>
+          <div class="field">
+            <label for="email">Correo electrónico</label>
+            <input class="input" id="email" name="email" type="email" required autocomplete="email" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="motivo">Motivo</label>
+            <select class="select" id="motivo" name="motivo">
+              <option>Solicitud de plantilla o checklist</option>
+              <option>Consulta técnica</option>
+              <option>Sugerencia de tema</option>
+              <option>Corrección de contenido</option>
+              <option value="Publicidad / Anunciarse">Publicidad / Anunciarse</option>
+              <option>Colaboración</option>
+              <option>Otro</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="cargo">Tu perfil <span class="opt">(opcional)</span></label>
+            <select class="select" id="cargo" name="cargo">
+              <option value="">Selecciona…</option>
+              <option>Estudiante</option>
+              <option>Cadete / pasante</option>
+              <option>Oficial de máquinas</option>
+              <option>Oficial de puente</option>
+              <option>Subalterno</option>
+              <option>Otro</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="mensaje">Mensaje</label>
+          <textarea class="textarea" id="mensaje" name="mensaje" required
+            placeholder="Cuéntame qué necesitas. Si es una plantilla, indica para qué tipo de buque o equipo."></textarea>
+        </div>
+
+        <label class="consent">
+          <input type="checkbox" name="consentimiento" required />
+          <span>He leído y acepto la <a href="/politica-de-privacidad/">política de privacidad</a>.</span>
+        </label>
+
+        <input type="text" name="_gotcha" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+        <button type="submit" class="btn btn-brass">
+          <Icon name="mail" /> Enviar mensaje
+        </button>
+        <p class="status" role="status" aria-live="polite"></p>
+      </form>
+
+      <aside class="side reveal">
+        <div class="side-card">
+          <h3>¿Qué puedes pedir?</h3>
+          <ul>
+            <li><Icon name="checklist" size={20} /> Checklists para equipos o maniobras concretas</li>
+            <li><Icon name="toolbox" size={20} /> Plantillas de registros y reportes</li>
+            <li><Icon name="language" size={20} /> Vocabulario técnico en inglés por sistema</li>
+            <li><Icon name="compass" size={20} /> Guías sobre procedimientos o sistemas</li>
+            <li><Icon name="anchor" size={20} /> Consejos de carrera y embarque</li>
+            <li><Icon name="radar" size={20} /> Espacios para anunciantes</li>
+          </ul>
+        </div>
+        <div class="note">
+          <Icon name="lightbulb" size={22} />
+          <p>
+            <strong>Consejo:</strong> cuanto más concreta sea tu solicitud (tipo de buque, equipo, marca o situación),
+            más útil será el recurso que se publique.
+          </p>
+        </div>
+        <p class="direct">
+          También puedes escribir directamente a <a href={`mailto:${SITE.contactEmail}`}>{SITE.contactEmail}</a>
+        </p>
+      </aside>
+    </div>
+  </section>
+</Base>
+
+<script>
+  // Preselecciona el motivo si llega desde /anunciate/ (?motivo=publicidad)
+  if (new URLSearchParams(location.search).get('motivo') === 'publicidad') {
+    const sel = document.querySelector<HTMLSelectElement>('#motivo');
+    if (sel) sel.value = 'Publicidad / Anunciarse';
+  }
+  const form = document.querySelector<HTMLFormElement>('#contact-form');
+  const status = form?.querySelector<HTMLElement>('.status');
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!status) return;
+    const data = new FormData(form);
+    if (data.get('_gotcha')) return;
+
+    // Con Formspree configurado: envío directo sin salir de la página.
+    if (form.action && form.getAttribute('action')) {
+      status.textContent = 'Enviando…';
+      try {
+        const res = await fetch(form.action, { method: 'POST', body: data, headers: { Accept: 'application/json' } });
+        if (!res.ok) throw new Error();
+        form.reset();
+        status.textContent = '¡Mensaje enviado! Te responderé lo antes posible.';
+        status.dataset.state = 'ok';
+      } catch {
+        status.textContent = 'No se pudo enviar. Inténtalo de nuevo o escribe directamente al correo indicado.';
+        status.dataset.state = 'error';
+      }
+      return;
+    }
+
+    // Sin servicio configurado: abre el cliente de correo con el mensaje redactado.
+    const subject = `[Rumbo Mercante] ${data.get('motivo')}`;
+    const body = [
+      `Nombre: ${data.get('nombre')}`,
+      `Correo: ${data.get('email')}`,
+      data.get('cargo') ? `Perfil: ${data.get('cargo')}` : '',
+      '',
+      `${data.get('mensaje')}`,
+    ]
+      .filter((l) => l !== null)
+      .join('\n');
+    window.location.href = `mailto:${form.dataset.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    status.textContent = 'Abriendo tu aplicación de correo…';
+    status.dataset.state = 'ok';
+  });
+</script>
+
+<style>
+  .contact-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: start;
+    padding-bottom: 3rem;
+  }
+  .form {
+    display: grid;
+    gap: 1.3rem;
+    padding: clamp(1.5rem, 4vw, 2.5rem);
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+  }
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.3rem;
+  }
+  .opt {
+    font-weight: 400;
+    color: var(--muted);
+  }
+  .consent {
+    display: flex;
+    gap: 0.7rem;
+    align-items: flex-start;
+    font-size: 0.92rem;
+    color: var(--ink-soft);
+  }
+  .consent input {
+    margin-top: 0.3rem;
+    width: 18px;
+    height: 18px;
+    accent-color: var(--navy-700);
+  }
+  .hp {
+    position: absolute;
+    left: -9999px;
+  }
+  .form .btn {
+    justify-self: start;
+  }
+  .status {
+    margin: 0;
+    font-size: 0.95rem;
+    min-height: 1.5em;
+  }
+  .status[data-state='ok'] {
+    color: var(--ok);
+  }
+  .status[data-state='error'] {
+    color: var(--warn);
+  }
+  .side {
+    display: grid;
+    gap: 1.25rem;
+  }
+  .side-card {
+    padding: 1.8rem;
+    border-radius: var(--radius-lg);
+    background: var(--navy-900);
+    color: rgba(255, 255, 255, 0.8);
+  }
+  .side-card h3 {
+    color: var(--white);
+  }
+  .side-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0 0;
+    display: grid;
+    gap: 0.85rem;
+  }
+  .side-card li {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+    font-size: 0.95rem;
+  }
+  .side-card li :global(svg) {
+    flex: none;
+    color: var(--brass-light);
+  }
+  .note :global(svg) {
+    flex: none;
+    color: var(--brass-dark);
+  }
+  .note p {
+    margin: 0;
+  }
+  .direct {
+    font-size: 0.92rem;
+    color: var(--muted);
+  }
+  @media (max-width: 860px) {
+    .contact-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 560px) {
+    .row {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

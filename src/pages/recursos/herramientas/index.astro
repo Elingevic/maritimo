@@ -1,0 +1,103 @@
+---
+import Base from '../../../layouts/Base.astro';
+import PageHero from '../../../components/PageHero.astro';
+import SubcategoryNav from '../../../components/SubcategoryNav.astro';
+import ArticleCard from '../../../components/ArticleCard.astro';
+import Icon from '../../../components/Icon.astro';
+import { getCategory, getSubcategory, TOOLS } from '../../../config';
+import { getArticulos } from '../../../lib/utils';
+
+const cat = getCategory('recursos')!;
+const sub = getSubcategory('recursos', 'herramientas')!;
+const articles = (await getArticulos('recursos')).filter((a) => a.data.subcategory === 'herramientas');
+---
+<Base title={`${sub.name} · ${cat.short}`} description={sub.description}>
+  <PageHero
+    kicker={cat.name}
+    title={sub.name}
+    lead={sub.description}
+    icon="calculator"
+    accent={cat.color}
+    breadcrumbs={[
+      { href: '/recursos/', label: cat.short },
+      { href: '/recursos/herramientas/', label: sub.name },
+    ]}
+  />
+  <SubcategoryNav cat={cat} current={sub.id} />
+
+  <section class="section-tight list">
+    <div class="container">
+      <div class="grid grid-2">
+        {TOOLS.map((t, i) => (
+          <a href={t.href} class="tool reveal">
+            <span class="tool-icon"><Icon name={i === 0 ? 'clock' : 'swap'} size={30} /></span>
+            <span class="tool-body">
+              <span class="tag">{t.tag}</span>
+              <strong>{t.title}</strong>
+              <span>{t.description}</span>
+              <span class="link-arrow">Abrir herramienta <span>→</span></span>
+            </span>
+          </a>
+        ))}
+      </div>
+      {articles.length > 0 && (
+        <div class="grid grid-3 more">
+          {articles.map((a) => <ArticleCard article={a} showCategory={false} />)}
+        </div>
+      )}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .list {
+    padding-bottom: 6rem;
+  }
+  .tool {
+    display: flex;
+    gap: 1.4rem;
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    background: var(--navy-900);
+    color: rgba(255, 255, 255, 0.75);
+    text-decoration: none;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .tool:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    color: rgba(255, 255, 255, 0.75);
+  }
+  .tool-icon {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 16px;
+    background: var(--brass);
+    color: var(--navy-950);
+  }
+  .tool-body {
+    display: grid;
+    gap: 0.6rem;
+    justify-items: start;
+  }
+  .tool strong {
+    color: var(--white);
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    font-weight: 600;
+  }
+  .tool .tag {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: var(--brass-light);
+  }
+  .tool .link-arrow {
+    color: var(--brass-light);
+  }
+  .more {
+    margin-top: 1.5rem;
+  }
+</style>

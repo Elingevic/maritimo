@@ -1,0 +1,200 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import SubcategoryNav from '../../components/SubcategoryNav.astro';
+import Icon from '../../components/Icon.astro';
+import { CATEGORIES, TOOLS, type Category } from '../../config';
+import { getArticulos, articleUrl } from '../../lib/utils';
+
+export function getStaticPaths() {
+  return CATEGORIES.map((c) => ({ params: { categoria: c.id }, props: { cat: c } }));
+}
+
+const { cat } = Astro.props as { cat: Category };
+const articles = await getArticulos(cat.id);
+const subs = cat.subcategories.map((s) => {
+  const items = articles.filter((a) => a.data.subcategory === s.id);
+  const links =
+    cat.id === 'recursos' && s.id === 'herramientas'
+      ? TOOLS.map((t) => ({ href: t.href, title: t.title }))
+      : items.slice(0, 3).map((a) => ({ href: articleUrl(a), title: a.data.title }));
+  const count = cat.id === 'recursos' && s.id === 'herramientas' ? TOOLS.length + items.length : items.length;
+  return { ...s, links, count };
+});
+const others = CATEGORIES.filter((c) => c.id !== cat.id);
+---
+<Base title={cat.name} description={cat.description}>
+  <PageHero
+    kicker={cat.kicker}
+    title={cat.name}
+    lead={cat.description}
+    icon={cat.icon}
+    accent={cat.color}
+    breadcrumbs={[{ href: `/${cat.id}/`, label: cat.short }]}
+  />
+
+  <SubcategoryNav cat={cat} />
+
+  <section class="section-tight" style={`--accent: ${cat.color}`}>
+    <div class="container">
+      <div class="kicker">Subcategorías</div>
+      <div class="grid grid-subs">
+        {subs.map((s) => (
+          <div class="sub reveal">
+            <a href={`/${cat.id}/${s.id}/`} class="sub-head">
+              <h2>{s.name}</h2>
+              <span class="count">{s.count}</span>
+            </a>
+            <p>{s.description}</p>
+            {s.links.length > 0 ? (
+              <ul>
+                {s.links.map((l) => (
+                  <li><a href={l.href}><Icon name="arrow" size={14} /> {l.title}</a></li>
+                ))}
+              </ul>
+            ) : (
+              <p class="soon">Próximamente</p>
+            )}
+            <a href={`/${cat.id}/${s.id}/`} class="link-arrow">Ver {s.name.toLowerCase()} <span>→</span></a>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  {articles.length > 0 && (
+    <section class="section-tight">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <div class="kicker">Todas las publicaciones</div>
+            <h2>Lo último en {cat.short}</h2>
+          </div>
+        </div>
+        <div class="grid grid-3">
+          {articles.map((a) => <ArticleCard article={a} showCategory={false} />)}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="section-tight more">
+    <div class="container">
+      <div class="kicker">Otros rumbos</div>
+      <div class="grid grid-3">
+        {others.map((c) => (
+          <a href={`/${c.id}/`} class="other" style={`--accent: ${c.color}`}>
+            <span class="other-icon"><Icon name={c.icon} size={22} /></span>
+            <span>{c.name}</span>
+            <Icon name="arrow" size={18} />
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .grid-subs {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+  }
+  .sub {
+    display: flex;
+    flex-direction: column;
+    padding: 1.6rem;
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: var(--radius-lg);
+  }
+  .sub-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    gap: 1rem;
+    text-decoration: none;
+  }
+  .sub h2 {
+    font-size: 1.3rem;
+    margin: 0 0 0.5rem;
+  }
+  .sub-head:hover h2 {
+    color: var(--ocean);
+  }
+  .count {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--accent) 14%, white);
+    color: color-mix(in srgb, var(--accent) 75%, black);
+  }
+  .sub > p {
+    color: var(--muted);
+    font-size: 0.93rem;
+    line-height: 1.55;
+  }
+  .sub ul {
+    list-style: none;
+    margin: 0 0 1.2rem;
+    padding: 0;
+    display: grid;
+    gap: 0.5rem;
+    flex: 1;
+  }
+  .sub li a {
+    display: flex;
+    gap: 0.5rem;
+    align-items: baseline;
+    font-size: 0.92rem;
+    color: var(--ink-soft);
+    text-decoration: none;
+    line-height: 1.4;
+  }
+  .sub li a :global(svg) {
+    flex: none;
+    color: var(--accent);
+    transform: translateY(2px);
+  }
+  .sub li a:hover {
+    color: var(--ocean);
+  }
+  .soon {
+    flex: 1;
+    font-style: italic;
+    font-size: 0.9rem !important;
+  }
+  .more {
+    padding-bottom: 6rem;
+  }
+  .other {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 1.1rem 1.3rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--white);
+    color: var(--navy-800);
+    text-decoration: none;
+    font-weight: 600;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .other > span:nth-child(2) {
+    flex: 1;
+  }
+  .other:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+  .other-icon {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--accent) 14%, white);
+    color: color-mix(in srgb, var(--accent) 80%, black);
+  }
+</style>

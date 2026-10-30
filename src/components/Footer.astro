@@ -1,0 +1,152 @@
+---
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import { SITE, CATEGORIES, TOOLS } from '../config';
+const year = new Date().getFullYear();
+---
+<footer class="site-footer on-dark">
+  <div class="footer-wave" aria-hidden="true">
+    <svg viewBox="0 0 1440 60" preserveAspectRatio="none">
+      <path d="M0 30 C 240 60 480 0 720 30 S 1200 60 1440 30 V60 H0Z" fill="var(--navy-900)" />
+    </svg>
+  </div>
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <Logo light size={44} />
+      <p>{SITE.slogan}</p>
+      <p class="footer-sign">
+        <Icon name="anchor" size={16} /> Bienvenido a tu guardia diaria. Nos vemos a bordo.
+      </p>
+    </div>
+
+    <div>
+      <h3>Secciones</h3>
+      <ul>
+        {CATEGORIES.map((c) => <li><a href={`/${c.id}/`}>{c.name}</a></li>)}
+      </ul>
+    </div>
+
+    <div>
+      <h3>Herramientas</h3>
+      <ul>
+        {TOOLS.map((t) => <li><a href={t.href}>{t.title}</a></li>)}
+      </ul>
+    </div>
+
+    <div>
+      <h3>Rumbo Mercante</h3>
+      <ul>
+        <li><a href="/nosotros/">Nosotros</a></li>
+        <li><a href="/publicaciones/">Todas las publicaciones</a></li>
+        <li><a href="/anunciate/">Anúnciate</a></li>
+        <li><a href="/contacto/">Contacto</a></li>
+        <li><a href="/politica-de-privacidad/">Política de privacidad</a></li>
+        <li><a href="/terminos/">Términos de uso</a></li>
+        <li>
+          <a href={SITE.legacyBlog} target="_blank" rel="noopener">
+            Blog Ingmaritima <Icon name="external" size={13} class="inline-icon" />
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="container footer-bottom">
+    <span>© {year} {SITE.name}. Todos los derechos reservados.</span>
+    <span class="coords">10°36′N · 66°56′W — Rumbo fijo, mar abierto</span>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    position: relative;
+    margin-top: 0;
+    padding: 4.5rem 0 2rem;
+    font-size: 0.95rem;
+  }
+  .footer-wave {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -59px;
+    height: 60px;
+    pointer-events: none;
+  }
+  .footer-wave svg {
+    width: 100%;
+    height: 100%;
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1.6fr repeat(3, 1fr);
+    gap: 2.5rem;
+  }
+  .footer-brand p {
+    margin-top: 1.2rem;
+    max-width: 34ch;
+    color: rgba(255, 255, 255, 0.65);
+  }
+  .footer-sign {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    font-family: var(--font-display);
+    font-style: italic;
+    color: var(--brass-light) !important;
+  }
+  h3 {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--brass-light) !important;
+    font-weight: 500;
+    margin-bottom: 1rem;
+  }
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.55rem;
+  }
+  ul a {
+    color: rgba(255, 255, 255, 0.75) !important;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  ul a:hover {
+    color: var(--white) !important;
+  }
+  .footer-bottom {
+    margin-top: 3.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.5);
+  }
+  .coords {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+  }
+  @media (max-width: 860px) {
+    .footer-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .footer-brand {
+      grid-column: 1 / -1;
+    }
+  }
+  @media (max-width: 480px) {
+    .footer-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

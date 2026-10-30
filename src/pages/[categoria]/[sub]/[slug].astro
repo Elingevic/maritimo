@@ -1,0 +1,293 @@
+---
+import { render } from 'astro:content';
+import Base from '../../../layouts/Base.astro';
+import PageHero from '../../../components/PageHero.astro';
+import ArticleCard from '../../../components/ArticleCard.astro';
+import Icon from '../../../components/Icon.astro';
+import { SITE, getCategory, getSubcategory } from '../../../config';
+import { getArticulos, formatDate, readingTime, TYPE_LABEL, type Articulo } from '../../../lib/utils';
+
+export async function getStaticPaths() {
+  const all = await getArticulos();
+  return all.map((a) => ({
+    params: { categoria: a.data.category, sub: a.data.subcategory, slug: a.id },
+    props: { article: a },
+  }));
+}
+
+const { article } = Astro.props as { article: Articulo };
+const { data } = article;
+const cat = getCategory(data.category)!;
+const sub = getSubcategory(data.category, data.subcategory)!;
+const { Content, headings } = await render(article);
+const toc = headings.filter((h) => h.depth === 2);
+const sameCat = (await getArticulos(data.category)).filter((a) => a.id !== article.id);
+const related = [
+  ...sameCat.filter((a) => a.data.subcategory === data.subcategory),
+  ...sameCat.filter((a) => a.data.subcategory !== data.subcategory),
+].slice(0, 3);
+---
+<Base title={data.title} description={data.description} type="article">
+  <div class="article-hero">
+    <PageHero
+      kicker={`${sub.name} · ${TYPE_LABEL[data.type]}`}
+      title={data.title}
+      lead={data.description}
+      accent={cat.color}
+      breadcrumbs={[
+        { href: `/${cat.id}/`, label: cat.short },
+        { href: `/${cat.id}/${sub.id}/`, label: sub.name },
+      ]}
+    >
+      <div class="meta">
+        <span><Icon name="user" size={16} /> {SITE.author}</span>
+        <span><Icon name="clock" size={16} /> {readingTime(article.body)} min de lectura</span>
+        <span>
+          {formatDate(data.date)}
+          {data.updated && ` · actualizado ${formatDate(data.updated)}`}
+        </span>
+      </div>
+      {(data.download || data.printable) && (
+        <div class="actions no-print">
+          {data.download && (
+            <a href={data.download} class="btn btn-brass" download>
+              <Icon name="download" /> {data.downloadLabel ?? 'Descargar plantilla'}
+            </a>
+          )}
+          {data.printable && (
+            <button class="btn btn-ghost" onclick="window.print()">
+              <Icon name="print" /> Imprimir / Guardar PDF
+            </button>
+          )}
+        </div>
+      )}
+    </PageHero>
+  </div>
+
+  <div class="container article-layout">
+    <article class="prose article-body">
+      <Content />
+    </article>
+
+    <aside class="article-aside">
+      <div class="sticky">
+        {toc.length > 2 && (
+          <nav class="toc" aria-label="En este artículo">
+            <div class="aside-title">En este artículo</div>
+            <ol>
+              {toc.map((h) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}
+            </ol>
+          </nav>
+        )}
+        <div class="author-box">
+          <div class="avatar" aria-hidden="true">JC</div>
+          <div>
+            <strong>{SITE.author}</strong>
+            <span>{SITE.authorRole}</span>
+          </div>
+          <p>Graduado hace 8 años, con experiencia consolidada a bordo de buques de pasajeros.</p>
+          <a href="/nosotros/" class="link-arrow">Sobre el autor <span>→</span></a>
+        </div>
+        {data.tags.length > 0 && (
+          <div class="tags">
+            {data.tags.map((t) => <span class="tag">#{t}</span>)}
+          </div>
+        )}
+      </div>
+    </aside>
+  </div>
+
+  <div class="container-narrow no-print">
+    <div class="disclaimer note">
+      <Icon name="shield" size={22} />
+      <p>
+        <strong>Contenido orientativo.</strong> Este material se basa en experiencia profesional y normativa
+        de referencia. Verifica siempre los procedimientos del SMS de tu compañía, las instrucciones del fabricante y
+        las órdenes de tus superiores a bordo.
+      </p>
+    </div>
+  </div>
+
+  {related.length > 0 && (
+    <section class="section related">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <div class="kicker">Sigue leyendo</div>
+            <h2>Más en {cat.short}</h2>
+          </div>
+          <a href={`/${cat.id}/`} class="link-arrow">Ver toda la sección <span>→</span></a>
+        </div>
+        <div class="grid grid-3">
+          {related.map((a) => <ArticleCard article={a} showCategory={false} />)}
+        </div>
+      </div>
+    </section>
+  )}
+</Base>
+
+<script>
+  // Las listas de verificación del Markdown se pueden marcar y se recuerdan en este dispositivo
+  const boxes = document.querySelectorAll<HTMLInputElement>('.article-body input[type="checkbox"]');
+  const key = `rm-check:${location.pathname}`;
+  let state: boolean[] = [];
+  try {
+    state = JSON.parse(localStorage.getItem(key) || '[]');
+  } catch {}
+  boxes.forEach((b, i) => {
+    b.disabled = false;
+    b.checked = Boolean(state[i]);
+    b.addEventListener('change', () => {
+      state[i] = b.checked;
+      localStorage.setItem(key, JSON.stringify(state));
+    });
+  });
+</script>
+
+<style>
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1.6rem;
+    margin-top: 1.8rem;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.6);
+  }
+  .meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.8rem;
+  }
+  .article-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: clamp(2rem, 5vw, 4.5rem);
+    padding-block: clamp(2.5rem, 6vw, 4rem);
+  }
+  .article-body {
+    max-width: 740px;
+  }
+  .sticky {
+    position: sticky;
+    top: calc(var(--header-h) + 24px);
+    display: grid;
+    gap: 1.25rem;
+  }
+  .aside-title {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--brass-dark);
+    margin-bottom: 0.8rem;
+  }
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 2px solid var(--line);
+    counter-reset: toc;
+  }
+  .toc li {
+    counter-increment: toc;
+  }
+  .toc a {
+    display: block;
+    padding: 0.35rem 0 0.35rem 1rem;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+    text-decoration: none;
+    line-height: 1.4;
+    margin-left: -2px;
+    border-left: 2px solid transparent;
+  }
+  .toc a:hover {
+    color: var(--navy-800);
+    border-left-color: var(--brass);
+  }
+  .author-box {
+    padding: 1.3rem;
+    border-radius: var(--radius);
+    background: var(--white);
+    border: 1px solid var(--line);
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.9rem;
+    align-items: center;
+  }
+  .author-box > div:not(.avatar) {
+    display: grid;
+    line-height: 1.3;
+  }
+  .author-box strong {
+    color: var(--navy-900);
+  }
+  .author-box span {
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  .author-box p,
+  .author-box .link-arrow {
+    grid-column: 1 / -1;
+    margin: 0;
+    font-size: 0.88rem;
+    color: var(--muted);
+  }
+  .author-box .link-arrow {
+    color: var(--navy-700);
+  }
+  .avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: var(--navy-800);
+    color: var(--brass-light);
+    font-family: var(--font-display);
+    font-weight: 600;
+  }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .disclaimer {
+    margin-bottom: 3rem;
+  }
+  .disclaimer :global(svg) {
+    flex: none;
+    color: var(--ocean);
+  }
+  .disclaimer p {
+    margin: 0;
+  }
+  .related {
+    background: var(--sand-100);
+    border-top: 1px solid var(--line);
+    padding-bottom: 7rem;
+  }
+  @media (max-width: 980px) {
+    .article-layout {
+      grid-template-columns: 1fr;
+    }
+    .article-aside {
+      order: -1;
+    }
+    .toc {
+      display: none;
+    }
+    .sticky {
+      position: static;
+    }
+    .author-box {
+      display: none;
+    }
+  }
+</style>

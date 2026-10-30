@@ -1,0 +1,166 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Icon from '../components/Icon.astro';
+import { ADS_FREE } from '../config';
+---
+<Base
+  title="Anúnciate"
+  description="Da a conocer tu empresa a estudiantes, cadetes y oficiales de la marina mercante. Espacios gratuitos durante el lanzamiento."
+>
+  <PageHero
+    kicker="Anunciantes"
+    title="Llega a la gente de mar"
+    lead="Rumbo Mercante reúne a estudiantes, cadetes, pasantes y oficiales de cubierta y máquinas. Si tu empresa ofrece formación, empleo, equipamiento o servicios marítimos, este es tu espacio."
+    icon="radar"
+    breadcrumbs={[{ href: '/anunciate/', label: 'Anúnciate' }]}
+  >
+    {ADS_FREE && (
+      <p class="free"><Icon name="check" size={18} /> Gratis durante el lanzamiento</p>
+    )}
+  </PageHero>
+
+  <section class="section">
+    <div class="container">
+      <div class="kicker">¿A quién va dirigido?</div>
+      <div class="grid grid-3">
+        <div class="box reveal">
+          <Icon name="book" size={28} />
+          <h3>Formación</h3>
+          <p>Academias, escuelas náuticas y centros de formación STCW, cursos de inglés marítimo y preparación de exámenes.</p>
+        </div>
+        <div class="box reveal">
+          <Icon name="ship" size={28} />
+          <h3>Empleo</h3>
+          <p>Navieras, agencias de tripulación y empresas que buscan cadetes, oficiales y personal técnico.</p>
+        </div>
+        <div class="box reveal">
+          <Icon name="toolbox" size={28} />
+          <h3>Productos y servicios</h3>
+          <p>Equipamiento de trabajo, EPI, uniformes, seguros, servicios técnicos, conectividad y todo lo que la gente de mar necesita.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight steps-band">
+    <div class="container">
+      <div class="kicker">Cómo funciona</div>
+      <ol class="steps">
+        <li class="reveal">
+          <strong>Escríbenos</strong>
+          <span>Cuéntanos quién eres y qué ofreces a través del formulario de contacto.</span>
+        </li>
+        <li class="reveal">
+          <strong>Envía tu logo y enlace</strong>
+          <span>Un logo en buena calidad, una frase descriptiva y la web a la que quieres dirigir a los visitantes.</span>
+        </li>
+        <li class="reveal">
+          <strong>Aparece en la portada</strong>
+          <span>Tu marca se muestra en la sección de anunciantes de la página de inicio.</span>
+        </li>
+      </ol>
+      <p class="fine">
+        Solo se aceptan anunciantes relacionados con el sector marítimo y que aporten valor a la gente de mar.
+        {ADS_FREE && ' Los espacios gratuitos del lanzamiento son limitados; más adelante se ofrecerán planes de pago.'}
+      </p>
+    </div>
+  </section>
+
+  <section class="section-tight">
+    <div class="container cta-row">
+      <h2>¿Hablamos?</h2>
+      <a href="/contacto/?motivo=publicidad" class="btn btn-brass"><Icon name="mail" /> Solicitar un espacio</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .free {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 1.6rem 0 0;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    background: var(--brass);
+    color: var(--navy-950);
+    font-weight: 600;
+    font-size: 0.92rem;
+  }
+  .box {
+    padding: 1.8rem;
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+  }
+  .box :global(svg) {
+    color: var(--brass-dark);
+    margin-bottom: 1rem;
+  }
+  .box p {
+    color: var(--muted);
+    margin: 0;
+  }
+  .steps-band {
+    background: var(--sand-100);
+    border-block: 1px solid var(--line);
+  }
+  .steps {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+    counter-reset: step;
+  }
+  .steps li {
+    counter-increment: step;
+    padding: 1.6rem;
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--line);
+    display: grid;
+    gap: 0.4rem;
+  }
+  .steps li::before {
+    content: counter(step, decimal-leading-zero);
+    font-family: var(--font-display);
+    font-size: 2rem;
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--brass);
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+  .steps strong {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    color: var(--navy-900);
+  }
+  .steps span {
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+  .fine {
+    margin: 1.5rem 0 0;
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+  .cta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    padding-bottom: 5rem;
+  }
+  .cta-row h2 {
+    margin: 0;
+  }
+  @media (max-width: 800px) {
+    .steps {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
