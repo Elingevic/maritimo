@@ -1,5 +1,6 @@
 ---
 titulo: 'De cero a la mar: el camino real del marino mercante'
+foto: /img/1000736748.webp
 datos:
   - Ingeniería Marítima
   - Graduado hace 8 años
