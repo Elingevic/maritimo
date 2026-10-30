@@ -13,6 +13,11 @@ const sub = getSubcategory(article.data.category, article.data.subcategory);
 const mins = readingTime(article.body);
 ---
 <article class="card reveal" style={`--accent: ${cat.color}`}>
+  {article.data.image && (
+    <a href={articleUrl(article)} class="card-media" tabindex="-1" aria-hidden="true">
+      <img src={article.data.image} alt="" loading="lazy" decoding="async" />
+    </a>
+  )}
   <a href={articleUrl(article)} class="card-link">
     <div class="card-top">
       <span class="card-icon"><Icon name={cat.icon} size={20} /></span>
@@ -58,7 +63,27 @@ const mins = readingTime(article.body);
   .card:hover::before {
     transform: scaleX(1);
   }
+  .card {
+    display: flex;
+    flex-direction: column;
+  }
+  .card-media {
+    display: block;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: var(--sand-100);
+  }
+  .card-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+  .card:hover .card-media img {
+    transform: scale(1.04);
+  }
   .card-link {
+    flex: 1;
     display: flex;
     flex-direction: column;
     height: 100%;

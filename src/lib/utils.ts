@@ -1,20 +1,28 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
-import { getSubcategory } from '../config';
+import { findCategoryOfSubcategory, type CategoryId } from '../config';
 
-export type Articulo = CollectionEntry<'articulos'>;
+type Entry = CollectionEntry<'articulos'>;
+// Tras normalizar, la sección siempre está definida
+export type Articulo = Entry & { data: Entry['data'] & { category: CategoryId } };
 
-export async function getArticulos(category?: string): Promise<Articulo[]> {
+async function loadAll(): Promise<Articulo[]> {
   const all = await getCollection('articulos', ({ data }) => !data.draft);
   for (const a of all) {
-    if (!getSubcategory(a.data.category, a.data.subcategory)) {
+    const cat = findCategoryOfSubcategory(a.data.subcategory);
+    if (!cat) {
       throw new Error(
-        `El artículo "${a.id}" usa la subcategoría "${a.data.subcategory}", que no existe en "${a.data.category}". Revisa src/config.ts.`,
+        `El artículo "${a.id}" usa la subcategoría "${a.data.subcategory}", que no existe. Revisa src/config.ts.`,
       );
     }
+    // La subcategoría manda: evita combinaciones sección/subcategoría incoherentes
+    a.data.category = cat.id;
   }
-  return all
-    .filter((a) => !category || a.data.category === category)
-    .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+  return (all as Articulo[]).sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+}
+
+export async function getArticulos(category?: string): Promise<Articulo[]> {
+  const all = await loadAll();
+  return category ? all.filter((a) => a.data.category === category) : all;
 }
 
 export const articleUrl = (a: Articulo) => `/${a.data.category}/${a.data.subcategory}/${a.id}/`;

@@ -2,7 +2,7 @@
 
 > Recursos, herramientas y conocimiento operativo para el día a día de la gente de mar.
 
-Sitio web estático hecho con [Astro](https://astro.build). Se publica en Vercel sin configuración extra.
+Sitio web hecho con [Astro](https://astro.build) y publicado en Vercel. El contenido se edita desde un panel en `/admin/`.
 
 ## Estructura del sitio
 
@@ -16,74 +16,80 @@ Sitio web estático hecho con [Astro](https://astro.build). Se publica en Vercel
 | Todas las publicaciones | `/publicaciones/` |
 | Nosotros, Contacto, Anúnciate | `/nosotros/`, `/contacto/`, `/anunciate/` |
 | Legales | `/politica-de-privacidad/`, `/terminos/` |
+| Panel de administración | `/admin/` |
 
-## Cómo publicar un artículo nuevo
+## Panel de administración (`/admin/`)
 
-1. Crea un archivo `.md` en `src/content/articulos/`. El nombre del archivo será la URL (ej. `mi-articulo.md` → `/guias/sala-de-maquinas/mi-articulo/`).
-2. Copia esta cabecera y rellénala:
+El contenido se edita desde **https://maritimo-pi.vercel.app/admin/** con [Sveltia CMS](https://sveltiacms.app). Cada cambio guardado se convierte en un commit en `main` y Vercel republica la web sola. La guía para el editor está en **[GUIA-PANEL.md](GUIA-PANEL.md)**.
+
+| Qué se edita en el panel | Archivo |
+|---|---|
+| Publicaciones | `src/content/articulos/*.md` (imágenes en `public/img/articulos/`, descargas en `public/descargas/`) |
+| Autor, cargo, correo de contacto, Formspree | `src/data/ajustes.json` |
+| Anunciantes (logos en `public/anunciantes/`) | `src/data/anunciantes.json` |
+| Página "Nosotros" | `src/data/nosotros.md` |
+
+La configuración del panel se **genera en el build** desde `src/pages/admin/config.yml.ts`, a partir de las secciones y subcategorías de `src/config.ts`. Si añades una subcategoría ahí, aparece sola en el panel.
+
+### Dar acceso a un editor
+
+1. El editor necesita una cuenta de GitHub.
+2. En GitHub, ve a **maritimo → Settings → Collaborators → Add people** y añade su usuario (rol *Write*).
+3. Con eso ya puede entrar con **"Iniciar sesión con un token de acceso"**.
+
+### Activar el botón "Iniciar sesión con GitHub" (recomendado)
+
+Es más cómodo que el token. Se configura una sola vez:
+
+1. En GitHub, ve a **Settings → Developer settings → OAuth Apps → New OAuth App**.
+   - *Application name*: `Rumbo Mercante CMS`
+   - *Homepage URL*: `https://maritimo-pi.vercel.app`
+   - *Authorization callback URL*: `https://maritimo-pi.vercel.app/api/callback`
+2. Copia el **Client ID** y genera un **Client secret**.
+3. En Vercel, abre el proyecto y ve a **Settings → Environment Variables**. Añade `GITHUB_CLIENT_ID` y `GITHUB_CLIENT_SECRET` (entorno *Production*).
+4. Vuelve a desplegar (**Deployments → ⋯ → Redeploy**).
+
+Las funciones que gestionan el inicio de sesión están en `src/pages/api/auth.ts` y `src/pages/api/callback.ts` (por eso el proyecto usa el adaptador `@astrojs/vercel`; el resto del sitio es estático).
+
+> Si cambias de dominio, actualiza `site` en `astro.config.mjs`, `base_url` y `site_url` en `src/pages/admin/config.yml.ts` y la *callback URL* de la OAuth App.
+
+## Publicar un artículo a mano (sin panel)
+
+Crea un `.md` en `src/content/articulos/`. El nombre del archivo es la URL. La sección se deduce de la subcategoría.
 
 ```md
 ---
 title: 'Título del artículo'
-description: 'Resumen de una o dos frases (sale en las tarjetas y en Google).'
-category: guias            # recursos | guias | vida-a-bordo | actualidad
+description: 'Resumen de una o dos frases.'
 subcategory: sala-de-maquinas  # una de las subcategorías de src/config.ts
-type: guia                 # guia | checklist | plantilla | glosario | articulo | noticia
+type: guia                     # guia | checklist | plantilla | glosario | articulo | noticia
 date: 2026-11-05
 tags: [motor, mantenimiento]
-featured: false            # true = aparece en "Destacados" de la portada (se muestran los 3 más recientes)
-printable: false           # true = botón "Imprimir / Guardar PDF"
-# download: /descargas/archivo.xlsx   # opcional: archivo en public/descargas/
-# downloadLabel: 'Descargar plantilla'
-# draft: true              # oculta el artículo hasta que esté listo
+featured: false                # true = "Destacados" de la portada (los 3 más recientes)
+printable: false               # true = botón "Imprimir / Guardar PDF"
+# image: /img/articulos/foto.jpg
+# download: /descargas/archivo.xlsx
+# draft: true
 ---
 
-Aquí va el texto en Markdown.
-
-## Un subtítulo
-
-- Listas normales
-- [ ] Casillas de checklist que el lector puede marcar
+Texto en Markdown. Las casillas se escriben así:
+- [ ] Tarea
 ```
 
-3. Guarda, haz commit y push. Vercel publica el cambio solo en un minuto.
+## Secciones y subcategorías
 
-## Cambiar secciones, subcategorías, textos y correo
-
-Todo está en **`src/config.ts`**:
-
-- `SITE`: nombre, eslogan, autor, correo de contacto (`contactEmail`) y `formspreeId`.
-- `CATEGORIES`: las 4 secciones y sus **subcategorías**. Para añadir una subcategoría, agrega un objeto `{ id, name, description }`; su página se crea sola.
-- `ADVERTISERS`: los anunciantes de la portada (ver abajo).
-
-## Anunciantes
-
-En `src/config.ts`:
-
-```ts
-export const ADVERTISERS: Advertiser[] = [
-  { name: 'Academia Náutica X', description: 'Cursos STCW', href: 'https://...', logo: '/anunciantes/academia-x.png' },
-];
-export const AD_SLOTS = 4;     // número de huecos visibles (los vacíos dicen "Tu marca aquí")
-export const ADS_FREE = true;  // pon false cuando pase a ser de pago (quita el aviso "Anúnciate gratis")
-```
-
-Sube los logos a `public/anunciantes/`.
+Están en `CATEGORIES`, dentro de `src/config.ts`. Los `id` de las subcategorías deben ser únicos en todo el sitio, porque de ellos se deduce la sección de cada artículo.
 
 ## Formulario de contacto
 
-Por defecto el formulario abre el programa de correo del visitante con el mensaje ya redactado, dirigido a `contactEmail`.
-Para recibir los mensajes directamente sin que el visitante salga de la web:
-
-1. Crea una cuenta gratuita en [formspree.io](https://formspree.io) y un formulario nuevo.
-2. Copia el ID (ej. `xyzabcde`) en `formspreeId` dentro de `src/config.ts`.
+Sin Formspree, el formulario abre el programa de correo del visitante con el mensaje redactado y dirigido al correo de contacto. Con un ID de [Formspree](https://formspree.io), configurable desde el panel, los mensajes llegan directamente.
 
 ## Desarrollo local
 
 ```bash
 npm install
 npm run dev      # http://localhost:4321
-npm run build    # genera la carpeta dist/
+npm run build    # genera .vercel/output (formato de Vercel)
 ```
 
 ## Despliegue en Vercel

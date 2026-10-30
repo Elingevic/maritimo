@@ -1,18 +1,30 @@
-// Configuración central del sitio. Edita aquí nombre, textos y enlaces.
+// Configuración central del sitio.
+// Los datos que se editan desde el panel (/admin/) están en src/data/*.json;
+// aquí se combinan con lo que es estructura del sitio (secciones, subcategorías).
+import ajustesJson from './data/ajustes.json';
+import anunciosJson from './data/anunciantes.json';
+
+// El panel omite los campos opcionales vacíos, así que se leen como opcionales
+const ajustes = ajustesJson as Partial<Record<'autor' | 'cargo' | 'resumenAutor' | 'correoContacto' | 'formspreeId' | 'blogAnterior', string>>;
+const anuncios = anunciosJson as {
+  anunciosGratis?: boolean;
+  huecos?: number;
+  anunciantes?: { nombre?: string; descripcion?: string; enlace?: string; logo?: string }[];
+};
 
 export const SITE = {
   name: 'Rumbo Mercante',
   slogan: 'Recursos, herramientas y conocimiento operativo para el día a día de la gente de mar.',
   description:
     'Plantillas, checklists, guías técnicas, inglés marítimo y experiencia real a bordo para cadetes, pasantes y oficiales de la marina mercante.',
-  author: 'Jhonny Castorani',
-  authorRole: '2do Oficial de Máquinas',
-  legacyBlog: 'https://ingmaritima.blogspot.com',
+  author: ajustes.autor || 'Jhonny Castorani',
+  authorRole: ajustes.cargo || '',
+  authorSummary: ajustes.resumenAutor || '',
+  legacyBlog: ajustes.blogAnterior || 'https://ingmaritima.blogspot.com',
   // Correo que recibe los mensajes del formulario de contacto.
-  contactEmail: 'contacto@rumbomercante.com',
-  // Opcional: ID de Formspree (https://formspree.io) para recibir el formulario sin abrir el correo.
-  // Ejemplo: 'xyzabcde'. Si se deja vacío, el formulario abre el cliente de correo del visitante.
-  formspreeId: '',
+  contactEmail: ajustes.correoContacto || '',
+  // Opcional: ID de Formspree (https://formspree.io). Vacío = el formulario abre el correo del visitante.
+  formspreeId: (ajustes.formspreeId ?? '').trim(),
   locale: 'es',
 };
 
@@ -103,6 +115,9 @@ export const CATEGORIES: Category[] = [
 export const getCategory = (id: string) => CATEGORIES.find((c) => c.id === id);
 export const getSubcategory = (cat: string, sub: string) =>
   getCategory(cat)?.subcategories.find((s) => s.id === sub);
+// Los ids de subcategoría son únicos en todo el sitio: permiten deducir la sección
+export const findCategoryOfSubcategory = (sub: string) =>
+  CATEGORIES.find((c) => c.subcategories.some((s) => s.id === sub));
 
 export const NAV = [
   ...CATEGORIES.map((c) => ({ href: `/${c.id}/`, label: c.short })),
@@ -127,10 +142,7 @@ export const TOOLS = [
 ];
 
 // ---------------------------------------------------------------------------
-// Anunciantes / patrocinadores
-// Gratis durante el lanzamiento. Para añadir uno, agrega un objeto a la lista:
-//   { name: 'Empresa', description: 'Qué ofrece', href: 'https://...', logo: '/anunciantes/logo.png' }
-// (sube el logo a /public/anunciantes/). Los huecos vacíos se muestran como "Tu marca aquí".
+// Anunciantes / patrocinadores (se editan desde el panel: Ajustes → Anunciantes)
 // ---------------------------------------------------------------------------
 export interface Advertiser {
   name: string;
@@ -138,6 +150,8 @@ export interface Advertiser {
   href: string;
   logo?: string;
 }
-export const ADVERTISERS: Advertiser[] = [];
-export const AD_SLOTS = 4;
-export const ADS_FREE = true; // cambia a false cuando la publicidad pase a ser de pago
+export const ADVERTISERS: Advertiser[] = (anuncios.anunciantes ?? [])
+  .filter((a) => a.nombre && a.enlace)
+  .map((a) => ({ name: a.nombre!, description: a.descripcion ?? '', href: a.enlace!, logo: a.logo || undefined }));
+export const AD_SLOTS = Math.max(ADVERTISERS.length, Number(anuncios.huecos) || 0);
+export const ADS_FREE = anuncios.anunciosGratis !== false;

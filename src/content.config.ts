@@ -7,9 +7,13 @@ const articulos = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string(),
-    category: z.enum(['recursos', 'guias', 'vida-a-bordo', 'actualidad']),
+    // La sección se deduce de la subcategoría (ver src/lib/utils.ts); este campo es opcional.
+    category: z.enum(['recursos', 'guias', 'vida-a-bordo', 'actualidad']).optional(),
     // Debe coincidir con un id de subcategoría definido en src/config.ts
     subcategory: z.string(),
+    // Imagen de portada opcional (ruta dentro de /public, ej. /img/articulos/foto.jpg)
+    image: z.string().optional(),
+    imageAlt: z.string().optional(),
     date: z.coerce.date(),
     updated: z.coerce.date().optional(),
     // Tipo de contenido: se muestra como etiqueta en las tarjetas

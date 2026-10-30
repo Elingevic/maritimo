@@ -21,6 +21,7 @@ const cat = getCategory(data.category)!;
 const sub = getSubcategory(data.category, data.subcategory)!;
 const { Content, headings } = await render(article);
 const toc = headings.filter((h) => h.depth === 2);
+const initials = SITE.author.split(/\s+/).map((w) => w[0]).slice(0, 2).join('').toUpperCase();
 const sameCat = (await getArticulos(data.category)).filter((a) => a.id !== article.id);
 const related = [
   ...sameCat.filter((a) => a.data.subcategory === data.subcategory),
@@ -66,6 +67,12 @@ const related = [
 
   <div class="container article-layout">
     <article class="prose article-body">
+      {data.image && (
+        <figure class="cover">
+          <img src={data.image} alt={data.imageAlt ?? ''} decoding="async" />
+          {data.imageAlt && <figcaption>{data.imageAlt}</figcaption>}
+        </figure>
+      )}
       <Content />
     </article>
 
@@ -80,12 +87,12 @@ const related = [
           </nav>
         )}
         <div class="author-box">
-          <div class="avatar" aria-hidden="true">JC</div>
+          <div class="avatar" aria-hidden="true">{initials}</div>
           <div>
             <strong>{SITE.author}</strong>
             <span>{SITE.authorRole}</span>
           </div>
-          <p>Graduado hace 8 años, con experiencia consolidada a bordo de buques de pasajeros.</p>
+          <p>{SITE.authorSummary}</p>
           <a href="/nosotros/" class="link-arrow">Sobre el autor <span>→</span></a>
         </div>
         {data.tags.length > 0 && (
@@ -172,6 +179,26 @@ const related = [
   }
   .article-body {
     max-width: 740px;
+  }
+  .cover {
+    margin: 0 0 2rem;
+  }
+  .cover img {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+  }
+  .cover figcaption {
+    margin-top: 0.6rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  /* Imágenes insertadas dentro del texto desde el panel */
+  .article-body :global(img) {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius);
   }
   .sticky {
     position: sticky;

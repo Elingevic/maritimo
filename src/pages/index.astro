@@ -96,7 +96,11 @@ const latest = all.filter((a) => !featuredIds.has(a.id)).slice(0, 3);
             return (
               <a href={articleUrl(a)} class="feat reveal" style={`--accent: ${cat.color}`}>
                 <span class="feat-num">{String(i + 1).padStart(2, '0')}</span>
-                <span class="feat-icon"><Icon name={cat.icon} size={30} /></span>
+                {a.data.image ? (
+                  <span class="feat-icon feat-thumb"><img src={a.data.image} alt="" loading="lazy" /></span>
+                ) : (
+                  <span class="feat-icon"><Icon name={cat.icon} size={30} /></span>
+                )}
                 <span class="feat-body">
                   <span class="feat-meta">
                     <span class="feat-cat">{cat.short} · {sub.name}</span>
@@ -375,6 +379,17 @@ const latest = all.filter((a) => !featuredIds.has(a.id)).slice(0, 3);
     border-radius: 18px;
     background: color-mix(in srgb, var(--accent) 14%, white);
     color: color-mix(in srgb, var(--accent) 80%, black);
+  }
+  .feat-thumb {
+    width: 96px;
+    height: 72px;
+    overflow: hidden;
+    border-radius: 14px;
+  }
+  .feat-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
   .feat-body {
     display: grid;

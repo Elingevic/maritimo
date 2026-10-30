@@ -27,8 +27,9 @@ const empty = Math.max(0, AD_SLOTS - ADVERTISERS.length);
     <div class="slots">
       {ADVERTISERS.map((ad) => (
         <a href={ad.href} class="slot filled reveal" target="_blank" rel="sponsored noopener">
-          {ad.logo ? <img src={ad.logo} alt={ad.name} loading="lazy" /> : <strong>{ad.name}</strong>}
-          <span>{ad.description}</span>
+          {ad.logo && <img src={ad.logo} alt="" loading="lazy" />}
+          <strong class:list={{ small: !!ad.logo }}>{ad.name}</strong>
+          {ad.description && <span>{ad.description}</span>}
         </a>
       ))}
       {Array.from({ length: empty }).map(() => (
@@ -125,9 +126,14 @@ const empty = Math.max(0, AD_SLOTS - ADVERTISERS.length);
     color: var(--ink-soft);
   }
   .filled img {
-    max-height: 70px;
+    /* Altura fija: los SVG sin tamaño propio colapsarían a 0 */
+    height: 64px;
+    width: auto;
     max-width: 80%;
     object-fit: contain;
+  }
+  .filled strong.small {
+    font-size: 1rem;
   }
   .filled strong {
     font-family: var(--font-display);
