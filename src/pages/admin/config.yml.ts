@@ -90,7 +90,7 @@ const buildConfig = (origin: string) => ({
         })),
       ],
       fields: [
-        { name: 'title', label: '📝 Título', widget: 'string' },
+        { name: 'title', label: 'Título', widget: 'string' },
         {
           name: 'description',
           label: 'Resumen',
@@ -99,7 +99,7 @@ const buildConfig = (origin: string) => ({
         },
         {
           name: 'subcategory',
-          label: '🧭 Sección › Subcategoría',
+          label: 'Sección › Subcategoría',
           widget: 'select',
           options: subcategoryOptions,
           hint: 'Define en qué sección y subcategoría aparece la publicación.',
@@ -116,19 +116,19 @@ const buildConfig = (origin: string) => ({
         },
         {
           name: 'featured',
-          label: '⭐ Destacado en portada',
+          label: 'Destacado en portada',
           widget: 'boolean',
           default: false,
           hint: 'La portada muestra los 3 destacados más recientes.',
         },
         {
           name: 'draft',
-          label: '🙈 Borrador (no se publica)',
+          label: 'Borrador (no se publica)',
           widget: 'boolean',
           default: false,
           hint: 'Actívalo para guardar sin que aparezca en la web.',
         },
-        { name: 'image', label: '🖼️ Imagen de portada', widget: 'image', required: false },
+        { name: 'image', label: 'Imagen de portada', widget: 'image', required: false },
         {
           name: 'imageAlt',
           label: 'Descripción de la imagen',
@@ -146,7 +146,7 @@ const buildConfig = (origin: string) => ({
         },
         {
           name: 'download',
-          label: '📎 Archivo descargable',
+          label: 'Archivo descargable',
           widget: 'file',
           required: false,
           media_folder: '/public/descargas',
@@ -160,7 +160,7 @@ const buildConfig = (origin: string) => ({
           required: false,
           hint: 'Ej.: "Descargar plantilla (Excel)".',
         },
-        { name: 'body', label: '✍️ Contenido', widget: 'markdown' },
+        { name: 'body', label: 'Contenido', widget: 'markdown' },
       ],
     },
     {
@@ -179,7 +179,7 @@ const buildConfig = (origin: string) => ({
           fields: [
             {
               name: 'hero',
-              label: '🖼️ Cabecera (imagen grande y eslogan)',
+              label: 'Cabecera (imagen grande y eslogan)',
               widget: 'object',
               fields: [
                 { name: 'imagen', label: 'Imagen de fondo', widget: 'image', required: false, hint: 'Foto horizontal grande (buques, puerto…).' },
@@ -193,7 +193,7 @@ const buildConfig = (origin: string) => ({
             },
             {
               name: 'secciones',
-              label: '🧭 Bloque de las 4 secciones',
+              label: 'Bloque de las 4 secciones',
               widget: 'object',
               collapsed: true,
               fields: [
@@ -204,7 +204,7 @@ const buildConfig = (origin: string) => ({
             },
             {
               name: 'destacados',
-              label: '⭐ Bloque de destacados',
+              label: 'Bloque de destacados',
               widget: 'object',
               collapsed: true,
               fields: [
@@ -214,7 +214,7 @@ const buildConfig = (origin: string) => ({
             },
             {
               name: 'ultimos',
-              label: '🕑 Bloque de últimas publicaciones',
+              label: 'Bloque de últimas publicaciones',
               widget: 'object',
               collapsed: true,
               fields: [
@@ -224,7 +224,7 @@ const buildConfig = (origin: string) => ({
             },
             {
               name: 'anunciantes',
-              label: '📣 Bloque de anunciantes',
+              label: 'Bloque de anunciantes',
               widget: 'object',
               collapsed: true,
               fields: [
