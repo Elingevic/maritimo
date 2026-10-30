@@ -1,0 +1,43 @@
+---
+// Direcciones cortas /p/<nombre>/ que llevan a la página real del artículo.
+// Las usa el botón "Ver en la web" del panel (que no conoce la sección del artículo)
+// y también mantienen vivos los enlaces antiguos cuando se cambia la dirección de un artículo
+// (el panel guarda la dirección anterior en el campo "aliases").
+import { getArticulos, articleUrl } from '../../lib/utils';
+
+export async function getStaticPaths() {
+  const all = await getArticulos();
+  const seen = new Set<string>();
+  const paths: { params: { slug: string }; props: { to: string } }[] = [];
+  const add = (slug: string, to: string) => {
+    if (!slug || seen.has(slug)) return;
+    seen.add(slug);
+    paths.push({ params: { slug }, props: { to } });
+  };
+  for (const a of all) add(a.id, articleUrl(a));
+  for (const a of all) {
+    const aliases = ((a.data as { aliases?: unknown }).aliases ?? []) as unknown[];
+    for (const alias of aliases) {
+      const m = typeof alias === 'string' ? alias.match(/^\/?p\/([^/]+)\/?$/) : null;
+      if (m) add(m[1], articleUrl(a));
+    }
+  }
+  return paths;
+}
+
+const { to } = Astro.props as { to: string };
+---
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex" />
+    <meta http-equiv="refresh" content={`0; url=${to}`} />
+    <link rel="canonical" href={new URL(to, Astro.site)} />
+    <title>Redirigiendo…</title>
+    <script is:inline define:vars={{ to }}>location.replace(to);</script>
+  </head>
+  <body>
+    <p><a href={to}>Ir al artículo</a></p>
+  </body>
+</html>

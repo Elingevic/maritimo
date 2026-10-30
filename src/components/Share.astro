@@ -1,0 +1,59 @@
+---
+// Botones para compartir un artículo: WhatsApp y copiar enlace.
+import Icon from './Icon.astro';
+
+interface Props {
+  title: string;
+  url: string;
+  // 'dark' sobre la cabecera oscura del artículo; 'light' sobre fondo claro
+  variant?: 'dark' | 'light';
+}
+const { title, url, variant = 'light' } = Astro.props;
+const whatsapp = `https://wa.me/?text=${encodeURIComponent(`${title} ${url}`)}`;
+---
+<div class:list={['share', 'no-print', variant]}>
+  <a href={whatsapp} class="btn btn-sm share-wa" target="_blank" rel="noopener">
+    <Icon name="whatsapp" size={18} /> Compartir por WhatsApp
+  </a>
+  <button type="button" class="btn btn-sm btn-ghost share-copy" data-url={url}>
+    <Icon name="link" size={18} /> <span>Copiar enlace</span>
+  </button>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('.share-copy').forEach((b) =>
+    b.addEventListener('click', async () => {
+      const label = b.querySelector('span')!;
+      try {
+        await navigator.clipboard.writeText(b.dataset.url!);
+        label.textContent = '¡Enlace copiado!';
+      } catch {
+        // Sin acceso al portapapeles: se muestra el enlace para copiarlo a mano
+        window.prompt('Copia este enlace:', b.dataset.url);
+      }
+      setTimeout(() => (label.textContent = 'Copiar enlace'), 2000);
+    }),
+  );
+</script>
+
+<style>
+  .share {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+  .share-wa {
+    --btn-bg: #25d366;
+    --btn-fg: #06311a;
+  }
+  .share-wa:hover {
+    --btn-bg: #3ee27b;
+  }
+  .dark .share-copy {
+    --btn-fg: var(--white);
+    border-color: rgba(255, 255, 255, 0.25);
+  }
+  .dark .share-copy:hover {
+    --btn-bg: rgba(255, 255, 255, 0.08);
+  }
+</style>

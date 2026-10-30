@@ -63,6 +63,8 @@ const buildConfig = (origin: string) => ({
       name: 'articulos',
       label: 'Publicaciones',
       icon: 'newsmode',
+      // Botón "Ver en la web": /p/<nombre>/ redirige a la página real del artículo
+      preview_path: '/p/{{slug}}/',
       label_singular: 'publicación',
       description:
         'Artículos, guías, checklists, plantillas y noticias. Al guardar, la web se actualiza sola en 1-2 minutos.',
@@ -176,6 +178,7 @@ const buildConfig = (origin: string) => ({
           media_folder: '/public/img',
           public_folder: '/img',
           icon: 'home',
+          preview_path: '/',
           fields: [
             {
               name: 'hero',
@@ -238,6 +241,7 @@ const buildConfig = (origin: string) => ({
         {
           name: 'secciones',
           icon: 'category',
+          preview_path: '/',
           label: 'Secciones y subcategorías',
           file: '/src/data/secciones.json',
           fields: [
@@ -282,6 +286,7 @@ const buildConfig = (origin: string) => ({
         {
           name: 'nosotros',
           icon: 'person',
+          preview_path: '/nosotros/',
           label: 'Nosotros',
           file: '/src/data/nosotros.md',
           media_folder: '/public/img',
@@ -297,6 +302,7 @@ const buildConfig = (origin: string) => ({
         {
           name: 'otras',
           icon: 'contact_page',
+          preview_path: '/contacto/',
           label: 'Contacto, Anúnciate y Publicaciones',
           file: '/src/data/paginas.json',
           fields: [
@@ -337,6 +343,7 @@ const buildConfig = (origin: string) => ({
         {
           name: 'privacidad',
           icon: 'privacy_tip',
+          preview_path: '/politica-de-privacidad/',
           label: 'Política de privacidad',
           file: '/src/data/privacidad.md',
           fields: [
@@ -348,6 +355,7 @@ const buildConfig = (origin: string) => ({
         {
           name: 'terminos',
           icon: 'gavel',
+          preview_path: '/terminos/',
           label: 'Términos de uso',
           file: '/src/data/terminos.md',
           fields: [
@@ -368,6 +376,7 @@ const buildConfig = (origin: string) => ({
         {
           name: 'general',
           icon: 'settings',
+          preview_path: '/',
           label: 'Datos generales',
           file: '/src/data/ajustes.json',
           fields: [
@@ -404,6 +413,7 @@ const buildConfig = (origin: string) => ({
         {
           name: 'anunciantes',
           icon: 'campaign',
+          preview_path: '/anunciate/',
           label: 'Anunciantes',
           file: '/src/data/anunciantes.json',
           media_folder: '/public/anunciantes',

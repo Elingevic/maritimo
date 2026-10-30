@@ -1,6 +1,6 @@
 ---
 titulo: Política de privacidad
-actualizado: 29 de octubre de 2026
+actualizado: 30 de octubre de 2026
 ---
 
 En **Rumbo Mercante** respetamos tu privacidad. Esta política explica qué datos personales se recogen cuando visitas el sitio, con qué finalidad y cuáles son tus derechos.
@@ -37,9 +37,11 @@ Los mensajes se conservan durante el tiempo necesario para atender tu solicitud 
 
 El sitio se aloja en Vercel Inc. Las fuentes tipográficas se cargan desde Google Fonts. Si el formulario de contacto utiliza un servicio de envío de formularios, este actuará como encargado del tratamiento únicamente para hacer llegar tu mensaje. Estos proveedores pueden procesar datos técnicos según sus propias políticas de privacidad.
 
-## 7. Cookies
+## 7. Cookies y estadísticas de visitas
 
-Rumbo Mercante no utiliza cookies publicitarias ni de seguimiento. Si en el futuro se incorporan herramientas de analítica, esta política se actualizará y se solicitará tu consentimiento cuando sea necesario.
+Rumbo Mercante no utiliza cookies publicitarias ni de seguimiento.
+
+Para saber qué contenidos son más útiles se usa **Vercel Web Analytics**, que cuenta las visitas de forma agregada y anónima: no utiliza cookies, no identifica a los visitantes y no sigue su actividad en otros sitios web.
 
 ## 8. Tus derechos
 

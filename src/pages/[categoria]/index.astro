@@ -24,7 +24,7 @@ const subs = cat.subcategories.map((s) => {
 });
 const others = CATEGORIES.filter((c) => c.id !== cat.id);
 ---
-<Base title={cat.name} description={cat.description}>
+<Base title={cat.name} description={cat.description} image={`/og/${cat.id}.jpg`}>
   <PageHero
     kicker={cat.kicker}
     title={cat.name}

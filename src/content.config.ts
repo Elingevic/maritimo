@@ -26,6 +26,8 @@ const articulos = defineCollection({
     printable: z.boolean().default(false),
     featured: z.boolean().default(false),
     draft: z.boolean().default(false),
+    // Direcciones anteriores del artículo (las añade el panel al cambiar su dirección)
+    aliases: z.array(z.string()).optional(),
   }),
 });
 

@@ -4,6 +4,7 @@ import Base from '../../../layouts/Base.astro';
 import PageHero from '../../../components/PageHero.astro';
 import ArticleCard from '../../../components/ArticleCard.astro';
 import Icon from '../../../components/Icon.astro';
+import Share from '../../../components/Share.astro';
 import { SITE, getCategory, getSubcategory } from '../../../config';
 import { getArticulos, formatDate, readingTime, TYPE_LABEL, type Articulo } from '../../../lib/utils';
 
@@ -27,8 +28,18 @@ const related = [
   ...sameCat.filter((a) => a.data.subcategory === data.subcategory),
   ...sameCat.filter((a) => a.data.subcategory !== data.subcategory),
 ].slice(0, 3);
+const pageUrl = new URL(Astro.url.pathname, Astro.site).toString();
+// Imagen para compartir: la foto del artículo con la marca, o la imagen de su sección
+const shareImage = data.image ? `/og/articulos/${article.id}.jpg` : `/og/${cat.id}.jpg`;
 ---
-<Base title={data.title} description={data.description} type="article">
+<Base
+  title={data.title}
+  description={data.description}
+  type="article"
+  image={shareImage}
+  imageAlt={data.imageAlt ?? data.title}
+  published={data.date}
+>
   <div class="article-hero">
     <PageHero
       kicker={`${sub.name} · ${TYPE_LABEL[data.type]}`}
@@ -62,6 +73,7 @@ const related = [
           )}
         </div>
       )}
+      <div class="hero-share"><Share title={data.title} url={pageUrl} variant="dark" /></div>
     </PageHero>
   </div>
 
@@ -74,6 +86,10 @@ const related = [
         </figure>
       )}
       <Content />
+      <div class="share-box not-prose">
+        <p><strong>¿Te ha servido?</strong> Compártelo con tu tripulación o con quien esté preparando su embarque.</p>
+        <Share title={data.title} url={pageUrl} />
+      </div>
     </article>
 
     <aside class="article-aside">
@@ -170,6 +186,23 @@ const related = [
     flex-wrap: wrap;
     gap: 0.75rem;
     margin-top: 1.8rem;
+  }
+  .hero-share {
+    margin-top: 1.2rem;
+  }
+  .share-box {
+    margin-top: 3rem !important;
+    padding: 1.4rem 1.5rem;
+    border-radius: var(--radius-lg);
+    background: var(--white);
+    border: 1px solid var(--line);
+    display: grid;
+    gap: 0.9rem;
+  }
+  .share-box p {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--ink-soft);
   }
   .article-layout {
     display: grid;

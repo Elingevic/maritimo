@@ -11,7 +11,7 @@ const cat = getCategory('recursos')!;
 const sub = getSubcategory('recursos', 'herramientas')!;
 const articles = (await getArticulos('recursos')).filter((a) => a.data.subcategory === 'herramientas');
 ---
-<Base title={`${sub.name} · ${cat.short}`} description={sub.description}>
+<Base title={`${sub.name} · ${cat.short}`} description={sub.description} image="/og/recursos.jpg">
   <PageHero
     kicker={cat.name}
     title={sub.name}
