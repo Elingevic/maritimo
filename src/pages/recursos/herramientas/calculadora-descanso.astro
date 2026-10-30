@@ -42,10 +42,13 @@ const hours = Array.from({ length: 24 }, (_, h) => String(h).padStart(2, '0'));
         </div>
       </div>
 
-      <p class="hint">
-        <span class="sw sw-work"></span> Trabajo <span class="sw sw-rest"></span> Descanso — Haz clic o arrastra sobre
-        las casillas (cada una equivale a 30 minutos). Tus datos se guardan en este dispositivo.
-      </p>
+      <div class="hint">
+        <span class="legend"><span class="sw sw-work"></span> Trabajo <span class="sw sw-rest"></span> Descanso</span>
+        <span>
+          Haz clic o arrastra sobre las casillas (cada una equivale a 30 minutos). En el móvil, toca cada casilla y
+          desliza la cuadrícula para ver todo el día. Tus datos se guardan en este dispositivo.
+        </span>
+      </div>
 
       <div class="board-wrap">
         <div class="board" id="board" style={`--days: ${DAYS}`}>
@@ -104,8 +107,8 @@ const hours = Array.from({ length: 24 }, (_, h) => String(h).padStart(2, '0'));
           <strong>Importante:</strong> esta calculadora es orientativa. La Regla VIII/1 del STCW y el MLC 2006 permiten
           excepciones (emergencias, ejercicios, convenios colectivos autorizados por la Administración) y algunos
           Estados de abanderamiento aplican criterios propios. El registro oficial es el que exige tu compañía y tu
-          bandera. La evaluación de periodos se hace dentro de los 7 días registrados; los periodos que cruzan la
-          medianoche se tratan como uno solo.
+          bandera. Se evalúa cualquier periodo de 24 h dentro de los 7 días registrados, también los que cruzan la
+          medianoche.
         </p>
       </div>
     </div>
@@ -126,55 +129,53 @@ const hours = Array.from({ length: 24 }, (_, h) => String(h).padStart(2, '0'));
     if (Array.isArray(saved) && saved.length === SLOTS) work = saved.map(Boolean);
   } catch {}
 
-  // ---- Pintado con clic / arrastre ----
+  // ---- Marcado de casillas ----
+  // Ratón: clic o arrastrar para pintar varias casillas.
+  // Táctil y teclado: cada toque / Enter cambia una casilla (deslizar el dedo desplaza la cuadrícula sin marcar).
   let painting = false;
   let paintValue = true;
+  let skipClick = false;
   const setCell = (i: number, v: boolean) => {
     work[i] = v;
     cells[i].classList.toggle('on', v);
     cells[i].setAttribute('aria-pressed', String(v));
   };
+  const cellFrom = (e: Event) => (e.target as HTMLElement).closest<HTMLButtonElement>('.cell');
+
   board.addEventListener('pointerdown', (e) => {
-    const t = (e.target as HTMLElement).closest<HTMLButtonElement>('.cell');
-    if (!t) return;
+    const t = cellFrom(e);
+    if (!t || e.pointerType === 'touch' || e.button !== 0) return;
     e.preventDefault();
     painting = true;
+    skipClick = true;
     const i = Number(t.dataset.i);
     paintValue = !work[i];
     setCell(i, paintValue);
     update();
   });
-  board.addEventListener('pointerover', (e) => {
+  // Se usa la posición del cursor porque el botón pulsado retiene los eventos del puntero
+  window.addEventListener('pointermove', (e) => {
     if (!painting) return;
-    const t = (e.target as HTMLElement).closest<HTMLButtonElement>('.cell');
+    const el = document.elementFromPoint(e.clientX, e.clientY) as HTMLElement | null;
+    const t = el?.closest<HTMLButtonElement>('#board .cell');
     if (!t) return;
-    setCell(Number(t.dataset.i), paintValue);
+    const i = Number(t.dataset.i);
+    if (work[i] === paintValue) return;
+    setCell(i, paintValue);
     update();
   });
-  // Soporte táctil: arrastrar con el dedo
-  board.addEventListener(
-    'touchmove',
-    (e) => {
-      if (!painting) return;
-      const touch = e.touches[0];
-      const el = document.elementFromPoint(touch.clientX, touch.clientY) as HTMLElement | null;
-      const t = el?.closest<HTMLButtonElement>('.cell');
-      if (t) {
-        e.preventDefault();
-        setCell(Number(t.dataset.i), paintValue);
-        update();
-      }
-    },
-    { passive: false },
-  );
-  const stop = () => (painting = false);
-  window.addEventListener('pointerup', stop);
-  window.addEventListener('touchend', stop);
-  window.addEventListener('touchcancel', stop);
-  board.addEventListener('keydown', (e) => {
-    const t = (e.target as HTMLElement).closest<HTMLButtonElement>('.cell');
-    if (!t || (e.key !== 'Enter' && e.key !== ' ')) return;
-    e.preventDefault();
+  window.addEventListener('pointerup', () => {
+    painting = false;
+    // El click posterior al arrastre se ignora; si no llega (soltado fuera de la casilla), se rearma igualmente
+    setTimeout(() => (skipClick = false), 0);
+  });
+  board.addEventListener('click', (e) => {
+    const t = cellFrom(e);
+    if (!t) return;
+    if (skipClick) {
+      skipClick = false;
+      return;
+    }
     const i = Number(t.dataset.i);
     setCell(i, !work[i]);
     update();
@@ -225,6 +226,9 @@ const hours = Array.from({ length: 24 }, (_, h) => String(h).padStart(2, '0'));
     return Number.isInteger(h) ? `${h} h` : `${Math.floor(h)} h 30 min`;
   };
 
+  // Formato compacto para la tabla (evita saltos de línea que moverían la cuadrícula)
+  const fmtShort = (slots: number) => `${(slots / 2).toLocaleString('es-ES')} h`;
+
   type Period = { start: number; end: number }; // [start, end)
   function restPeriods(): Period[] {
     const out: Period[] = [];
@@ -270,17 +274,25 @@ const hours = Array.from({ length: 24 }, (_, h) => String(h).padStart(2, '0'));
     if (totalRest < 154)
       issues.push({ day: null, text: `Descanso semanal de ${fmt(totalRest)}: por debajo del mínimo de 77 h en 7 días.` });
 
-    // Periodos de descanso por día (los que cruzan medianoche cuentan como uno)
+    // División del descanso: en cualquier periodo de 24 h, las 10 h mínimas deben cubrirse con
+    // 2 periodos como máximo, y uno de ellos debe ser de al menos 6 h (directrices OMI/OIT).
+    // Solo se evalúa donde ya hay 10 h de descanso; si no, el incumplimiento anterior ya lo indica.
     const periods = restPeriods();
-    for (let d = 0; d < DAYS; d++) {
-      if (!work.slice(d * 48, d * 48 + 48).some(Boolean)) continue;
-      const ds = d * 48;
-      const de = ds + 48;
-      const inDay = periods.filter((p) => p.end > ds && p.start < de);
-      if (inDay.length > 2)
-        issues.push({ day: d, text: `Día ${d + 1}: el descanso está dividido en ${inDay.length} periodos (máximo 2).` });
-      if (!inDay.some((p) => p.end - p.start >= 12))
-        issues.push({ day: d, text: `Día ${d + 1}: ningún periodo de descanso alcanza las 6 h continuas.` });
+    const flagged = new Set<string>();
+    for (let i = 0; i + 48 <= SLOTS; i++) {
+      if (restIn(i) < 20) continue;
+      const lens = periods
+        .map((p) => Math.min(p.end, i + 48) - Math.max(p.start, i))
+        .filter((l) => l > 0)
+        .sort((x, y) => y - x);
+      const d = Math.floor(i / 48);
+      if (lens[0] < 12 && !flagged.has(`6-${d}`)) {
+        flagged.add(`6-${d}`);
+        issues.push({ day: d, text: `Día ${d + 1}: en un periodo de 24 h ningún descanso alcanza las 6 h continuas.` });
+      } else if (lens[0] >= 12 && lens[0] + (lens[1] ?? 0) < 20 && !flagged.has(`2-${d}`)) {
+        flagged.add(`2-${d}`);
+        issues.push({ day: d, text: `Día ${d + 1}: el descanso está demasiado fragmentado; las 10 h mínimas no caben en 2 periodos.` });
+      }
     }
 
     // Intervalo entre periodos de descanso (trabajo continuo) ≤ 14 h
@@ -302,10 +314,10 @@ const hours = Array.from({ length: 24 }, (_, h) => String(h).padStart(2, '0'));
     board.querySelectorAll<HTMLElement>('.hrow[data-day]').forEach((row) => {
       const d = Number(row.dataset.day);
       const w = work.slice(d * 48, d * 48 + 48).filter(Boolean).length;
-      row.querySelector('[data-k="work"]')!.textContent = fmt(w);
-      row.querySelector('[data-k="rest"]')!.textContent = fmt(48 - w);
+      row.querySelector('[data-k="work"]')!.textContent = fmtShort(w);
+      row.querySelector('[data-k="rest"]')!.textContent = fmtShort(48 - w);
       const minEl = row.querySelector<HTMLElement>('[data-k="min"]')!;
-      minEl.textContent = fmt(dayMin[d]);
+      minEl.textContent = fmtShort(dayMin[d]);
       minEl.dataset.ok = String(dayMin[d] >= 20);
       row.classList.toggle('bad', badDays.has(d));
     });
@@ -413,7 +425,17 @@ const hours = Array.from({ length: 24 }, (_, h) => String(h).padStart(2, '0'));
     display: flex;
     flex-wrap: wrap;
     align-items: center;
+    gap: 0.4rem 1.2rem;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+  }
+  .legend {
+    display: inline-flex;
+    align-items: center;
     gap: 0.4rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    white-space: nowrap;
   }
   .sw {
     display: inline-block;
@@ -498,6 +520,7 @@ const hours = Array.from({ length: 24 }, (_, h) => String(h).padStart(2, '0'));
     background: var(--navy-600);
   }
   .dstats {
+    white-space: nowrap;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     font-size: 0.85rem;
