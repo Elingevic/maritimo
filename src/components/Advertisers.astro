@@ -8,9 +8,9 @@ const empty = Math.max(0, AD_SLOTS - ADVERTISERS.length);
   <div class="container">
     <div class="ads-head reveal">
       <div>
-        {T.anunciantesKicker && <div class="kicker">{T.anunciantesKicker}</div>}
-        <h2 id="ads-title">{T.anunciantesTitulo}</h2>
-        {T.anunciantesTexto && <p>{T.anunciantesTexto}</p>}
+        {T.anunciantes.kicker && <div class="kicker">{T.anunciantes.kicker}</div>}
+        <h2 id="ads-title">{T.anunciantes.titulo}</h2>
+        {T.anunciantes.texto && <p>{T.anunciantes.texto}</p>}
       </div>
       {ADS_FREE && (
         <div class="promo">

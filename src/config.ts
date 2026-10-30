@@ -9,7 +9,15 @@ import paginasJson from './data/paginas.json';
 
 // Textos de la portada y de las páginas fijas (Páginas → Inicio / Contacto / Anúnciate…).
 // Se leen como opcionales porque el panel omite los campos vacíos.
-export const INICIO = inicioJson as Partial<Record<keyof typeof inicioJson, string>>;
+type Bloque = Partial<Record<'imagen' | 'kicker' | 'titulo' | 'tituloDestacado' | 'texto' | 'boton1' | 'boton2', string>>;
+const inicioData = inicioJson as Partial<Record<'hero' | 'secciones' | 'destacados' | 'ultimos' | 'anunciantes', Bloque>>;
+export const INICIO = {
+  hero: inicioData.hero ?? {},
+  secciones: inicioData.secciones ?? {},
+  destacados: inicioData.destacados ?? {},
+  ultimos: inicioData.ultimos ?? {},
+  anunciantes: inicioData.anunciantes ?? {},
+};
 type PaginaTextos = Partial<Record<'kicker' | 'titulo' | 'texto' | 'consejo' | 'condiciones', string>>;
 export const PAGINAS = paginasJson as Partial<Record<'contacto' | 'anunciate' | 'publicaciones', PaginaTextos>>;
 

@@ -1,19 +1,29 @@
 {
-  "heroKicker": "Rumbo Mercante · Cubierta y Máquinas",
-  "heroTitulo": "Recursos, herramientas y conocimiento operativo para el día a día de la",
-  "heroTituloDestacado": "gente de mar.",
-  "heroTexto": "Plantillas, checklists, guías técnicas e inglés marítimo escritos desde la experiencia real a bordo. Para el cadete que pisa un buque por primera vez y para el oficial que quiere seguir creciendo.",
-  "heroBoton1": "Explorar secciones",
-  "heroBoton2": "Conoce la historia",
-  "heroImagen": "/img/hero.jpg",
-  "seccionesKicker": "Carta de navegación",
-  "seccionesTitulo": "Cuatro secciones, un mismo rumbo",
-  "seccionesTexto": "Cada sección se divide en subcategorías que te llevan directo a los artículos que necesitas, estés en tierra preparando tu embarque o en plena guardia.",
-  "destacadosKicker": "Destacados",
-  "destacadosTitulo": "Lo más útil para empezar",
-  "ultimosKicker": "Bitácora",
-  "ultimosTitulo": "Últimas publicaciones",
-  "anunciantesKicker": "Anunciantes",
-  "anunciantesTitulo": "Empresas que acompañan a la gente de mar",
-  "anunciantesTexto": "Academias, centros de formación, navieras, agencias de tripulación, tiendas de equipamiento y servicios marítimos que apoyan este proyecto."
+  "hero": {
+    "imagen": "/img/hero.jpg",
+    "kicker": "Rumbo Mercante · Cubierta y Máquinas",
+    "titulo": "Recursos, herramientas y conocimiento operativo para el día a día de la",
+    "tituloDestacado": "gente de mar.",
+    "texto": "Plantillas, checklists, guías técnicas e inglés marítimo escritos desde la experiencia real a bordo. Para el cadete que pisa un buque por primera vez y para el oficial que quiere seguir creciendo.",
+    "boton1": "Explorar secciones",
+    "boton2": "Conoce la historia"
+  },
+  "secciones": {
+    "kicker": "Carta de navegación",
+    "titulo": "Cuatro secciones, un mismo rumbo",
+    "texto": "Cada sección se divide en subcategorías que te llevan directo a los artículos que necesitas, estés en tierra preparando tu embarque o en plena guardia."
+  },
+  "destacados": {
+    "kicker": "Destacados",
+    "titulo": "Lo más útil para empezar"
+  },
+  "ultimos": {
+    "kicker": "Bitácora",
+    "titulo": "Últimas publicaciones"
+  },
+  "anunciantes": {
+    "kicker": "Anunciantes",
+    "titulo": "Empresas que acompañan a la gente de mar",
+    "texto": "Academias, centros de formación, navieras, agencias de tripulación, tiendas de equipamiento y servicios marítimos que apoyan este proyecto."
+  }
 }

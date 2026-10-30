@@ -13,7 +13,7 @@ const featuredIds = new Set(featured.map((a) => a.id));
 const latest = all.filter((a) => !featuredIds.has(a.id)).slice(0, 3);
 
 // Imagen del hero: la original tiene versión reducida para móvil; una subida desde el panel se usa tal cual
-const heroImg = T.heroImagen || '/img/hero.jpg';
+const heroImg = T.hero.imagen || '/img/hero.jpg';
 const heroImgSm = heroImg === '/img/hero.jpg' ? '/img/hero-sm.jpg' : heroImg;
 ---
 <Base>
@@ -26,14 +26,14 @@ const heroImgSm = heroImg === '/img/hero.jpg' ? '/img/hero-sm.jpg' : heroImg;
     <div class="hero-shade" aria-hidden="true"></div>
 
     <div class="container hero-inner">
-      {T.heroKicker && <div class="kicker">{T.heroKicker}</div>}
+      {T.hero.kicker && <div class="kicker">{T.hero.kicker}</div>}
       <h1>
-        {T.heroTitulo} {T.heroTituloDestacado && <em>{T.heroTituloDestacado}</em>}
+        {T.hero.titulo} {T.hero.tituloDestacado && <em>{T.hero.tituloDestacado}</em>}
       </h1>
-      {T.heroTexto && <p class="hero-lead">{T.heroTexto}</p>}
+      {T.hero.texto && <p class="hero-lead">{T.hero.texto}</p>}
       <div class="hero-actions">
-        <a href="#secciones" class="btn btn-brass"><Icon name="compass" /> {T.heroBoton1 || 'Explorar secciones'}</a>
-        <a href="/nosotros/" class="btn btn-ghost">{T.heroBoton2 || 'Conoce la historia'} <Icon name="arrow" /></a>
+        <a href="#secciones" class="btn btn-brass"><Icon name="compass" /> {T.hero.boton1 || 'Explorar secciones'}</a>
+        <a href="/nosotros/" class="btn btn-ghost">{T.hero.boton2 || 'Conoce la historia'} <Icon name="arrow" /></a>
       </div>
     </div>
 
@@ -47,9 +47,9 @@ const heroImgSm = heroImg === '/img/hero.jpg' ? '/img/hero-sm.jpg' : heroImg;
     <div class="container">
       <div class="section-head reveal">
         <div>
-          {T.seccionesKicker && <div class="kicker">{T.seccionesKicker}</div>}
-          <h2>{T.seccionesTitulo}</h2>
-          {T.seccionesTexto && <p>{T.seccionesTexto}</p>}
+          {T.secciones.kicker && <div class="kicker">{T.secciones.kicker}</div>}
+          <h2>{T.secciones.titulo}</h2>
+          {T.secciones.texto && <p>{T.secciones.texto}</p>}
         </div>
       </div>
 
@@ -83,8 +83,8 @@ const heroImgSm = heroImg === '/img/hero.jpg' ? '/img/hero-sm.jpg' : heroImg;
       <div class="container">
         <div class="section-head reveal">
           <div>
-            {T.destacadosKicker && <div class="kicker">{T.destacadosKicker}</div>}
-            <h2>{T.destacadosTitulo}</h2>
+            {T.destacados.kicker && <div class="kicker">{T.destacados.kicker}</div>}
+            <h2>{T.destacados.titulo}</h2>
           </div>
         </div>
         <div class="featured">
@@ -124,8 +124,8 @@ const heroImgSm = heroImg === '/img/hero.jpg' ? '/img/hero-sm.jpg' : heroImg;
     <div class="container">
       <div class="section-head reveal">
         <div>
-          {T.ultimosKicker && <div class="kicker">{T.ultimosKicker}</div>}
-          <h2>{T.ultimosTitulo}</h2>
+          {T.ultimos.kicker && <div class="kicker">{T.ultimos.kicker}</div>}
+          <h2>{T.ultimos.titulo}</h2>
         </div>
         <a href="/publicaciones/" class="link-arrow">Ver todas las publicaciones <span>→</span></a>
       </div>

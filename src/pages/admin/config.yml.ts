@@ -62,6 +62,7 @@ const buildConfig = (origin: string) => ({
     {
       name: 'articulos',
       label: 'Publicaciones',
+      icon: 'newsmode',
       label_singular: 'publicación',
       description:
         'Artículos, guías, checklists, plantillas y noticias. Al guardar, la web se actualiza sola en 1-2 minutos.',
@@ -73,6 +74,12 @@ const buildConfig = (origin: string) => ({
       slug: '{{title}}',
       summary: '{{title}}',
       sortable_fields: ['title', { field: 'date', label: 'Fecha', default_sort: 'desc' }],
+      thumbnail: 'image',
+      view_groups: [
+        { label: 'Subcategoría', field: 'subcategory' },
+        { label: 'Tipo', field: 'type' },
+        { label: 'Borrador', field: 'draft' },
+      ],
       view_filters: [
         { label: 'Borradores', field: 'draft', pattern: true },
         { label: 'Destacados en portada', field: 'featured', pattern: true },
@@ -83,7 +90,7 @@ const buildConfig = (origin: string) => ({
         })),
       ],
       fields: [
-        { name: 'title', label: 'Título', widget: 'string' },
+        { name: 'title', label: '📝 Título', widget: 'string' },
         {
           name: 'description',
           label: 'Resumen',
@@ -92,7 +99,7 @@ const buildConfig = (origin: string) => ({
         },
         {
           name: 'subcategory',
-          label: 'Sección › Subcategoría',
+          label: '🧭 Sección › Subcategoría',
           widget: 'select',
           options: subcategoryOptions,
           hint: 'Define en qué sección y subcategoría aparece la publicación.',
@@ -109,19 +116,19 @@ const buildConfig = (origin: string) => ({
         },
         {
           name: 'featured',
-          label: 'Destacado en portada',
+          label: '⭐ Destacado en portada',
           widget: 'boolean',
           default: false,
           hint: 'La portada muestra los 3 destacados más recientes.',
         },
         {
           name: 'draft',
-          label: 'Borrador (no se publica)',
+          label: '🙈 Borrador (no se publica)',
           widget: 'boolean',
           default: false,
           hint: 'Actívalo para guardar sin que aparezca en la web.',
         },
-        { name: 'image', label: 'Imagen de portada', widget: 'image', required: false },
+        { name: 'image', label: '🖼️ Imagen de portada', widget: 'image', required: false },
         {
           name: 'imageAlt',
           label: 'Descripción de la imagen',
@@ -139,7 +146,7 @@ const buildConfig = (origin: string) => ({
         },
         {
           name: 'download',
-          label: 'Archivo descargable',
+          label: '📎 Archivo descargable',
           widget: 'file',
           required: false,
           media_folder: '/public/descargas',
@@ -153,12 +160,13 @@ const buildConfig = (origin: string) => ({
           required: false,
           hint: 'Ej.: "Descargar plantilla (Excel)".',
         },
-        { name: 'body', label: 'Contenido', widget: 'markdown' },
+        { name: 'body', label: '✍️ Contenido', widget: 'markdown' },
       ],
     },
     {
       name: 'paginas',
       label: 'Páginas y textos',
+      icon: 'web',
       description: 'Textos de la portada, las secciones y las páginas fijas de la web.',
       files: [
         {
@@ -167,28 +175,69 @@ const buildConfig = (origin: string) => ({
           file: '/src/data/inicio.json',
           media_folder: '/public/img',
           public_folder: '/img',
+          icon: 'home',
           fields: [
-            { name: 'heroImagen', label: 'Imagen de fondo de la portada', widget: 'image', required: false, hint: 'Foto horizontal grande (buques, puerto…).' },
-            { name: 'heroKicker', label: 'Texto pequeño sobre el título', widget: 'string', required: false },
-            { name: 'heroTitulo', label: 'Título principal', widget: 'text' },
-            { name: 'heroTituloDestacado', label: 'Final del título (en dorado y cursiva)', widget: 'string', required: false },
-            { name: 'heroTexto', label: 'Texto bajo el título', widget: 'text', required: false },
-            { name: 'heroBoton1', label: 'Botón 1 (lleva a las secciones)', widget: 'string' },
-            { name: 'heroBoton2', label: 'Botón 2 (lleva a "Nosotros")', widget: 'string' },
-            { name: 'seccionesKicker', label: 'Bloque Secciones · texto pequeño', widget: 'string', required: false },
-            { name: 'seccionesTitulo', label: 'Bloque Secciones · título', widget: 'string' },
-            { name: 'seccionesTexto', label: 'Bloque Secciones · texto', widget: 'text', required: false },
-            { name: 'destacadosKicker', label: 'Bloque Destacados · texto pequeño', widget: 'string', required: false },
-            { name: 'destacadosTitulo', label: 'Bloque Destacados · título', widget: 'string' },
-            { name: 'ultimosKicker', label: 'Bloque Últimas publicaciones · texto pequeño', widget: 'string', required: false },
-            { name: 'ultimosTitulo', label: 'Bloque Últimas publicaciones · título', widget: 'string' },
-            { name: 'anunciantesKicker', label: 'Bloque Anunciantes · texto pequeño', widget: 'string', required: false },
-            { name: 'anunciantesTitulo', label: 'Bloque Anunciantes · título', widget: 'string' },
-            { name: 'anunciantesTexto', label: 'Bloque Anunciantes · texto', widget: 'text', required: false },
+            {
+              name: 'hero',
+              label: '🖼️ Cabecera (imagen grande y eslogan)',
+              widget: 'object',
+              fields: [
+                { name: 'imagen', label: 'Imagen de fondo', widget: 'image', required: false, hint: 'Foto horizontal grande (buques, puerto…).' },
+                { name: 'kicker', label: 'Texto pequeño sobre el título', widget: 'string', required: false },
+                { name: 'titulo', label: 'Título principal', widget: 'text' },
+                { name: 'tituloDestacado', label: 'Final del título (en dorado y cursiva)', widget: 'string', required: false },
+                { name: 'texto', label: 'Texto bajo el título', widget: 'text', required: false },
+                { name: 'boton1', label: 'Botón dorado (lleva a las secciones)', widget: 'string' },
+                { name: 'boton2', label: 'Botón transparente (lleva a "Nosotros")', widget: 'string' },
+              ],
+            },
+            {
+              name: 'secciones',
+              label: '🧭 Bloque de las 4 secciones',
+              widget: 'object',
+              collapsed: true,
+              fields: [
+                { name: 'kicker', label: 'Texto pequeño', widget: 'string', required: false },
+                { name: 'titulo', label: 'Título', widget: 'string' },
+                { name: 'texto', label: 'Texto', widget: 'text', required: false },
+              ],
+            },
+            {
+              name: 'destacados',
+              label: '⭐ Bloque de destacados',
+              widget: 'object',
+              collapsed: true,
+              fields: [
+                { name: 'kicker', label: 'Texto pequeño', widget: 'string', required: false },
+                { name: 'titulo', label: 'Título', widget: 'string' },
+              ],
+            },
+            {
+              name: 'ultimos',
+              label: '🕑 Bloque de últimas publicaciones',
+              widget: 'object',
+              collapsed: true,
+              fields: [
+                { name: 'kicker', label: 'Texto pequeño', widget: 'string', required: false },
+                { name: 'titulo', label: 'Título', widget: 'string' },
+              ],
+            },
+            {
+              name: 'anunciantes',
+              label: '📣 Bloque de anunciantes',
+              widget: 'object',
+              collapsed: true,
+              fields: [
+                { name: 'kicker', label: 'Texto pequeño', widget: 'string', required: false },
+                { name: 'titulo', label: 'Título', widget: 'string' },
+                { name: 'texto', label: 'Texto', widget: 'text', required: false },
+              ],
+            },
           ],
         },
         {
           name: 'secciones',
+          icon: 'category',
           label: 'Secciones y subcategorías',
           file: '/src/data/secciones.json',
           fields: [
@@ -232,6 +281,7 @@ const buildConfig = (origin: string) => ({
         },
         {
           name: 'nosotros',
+          icon: 'person',
           label: 'Nosotros',
           file: '/src/data/nosotros.md',
           media_folder: '/public/img',
@@ -246,6 +296,7 @@ const buildConfig = (origin: string) => ({
         },
         {
           name: 'otras',
+          icon: 'contact_page',
           label: 'Contacto, Anúnciate y Publicaciones',
           file: '/src/data/paginas.json',
           fields: [
@@ -285,6 +336,7 @@ const buildConfig = (origin: string) => ({
         },
         {
           name: 'privacidad',
+          icon: 'privacy_tip',
           label: 'Política de privacidad',
           file: '/src/data/privacidad.md',
           fields: [
@@ -295,6 +347,7 @@ const buildConfig = (origin: string) => ({
         },
         {
           name: 'terminos',
+          icon: 'gavel',
           label: 'Términos de uso',
           file: '/src/data/terminos.md',
           fields: [
@@ -305,13 +358,16 @@ const buildConfig = (origin: string) => ({
         },
       ],
     },
+    { divider: true },
     {
       name: 'ajustes',
       label: 'Ajustes',
+      icon: 'tune',
       description: 'Nombre de la web, autor, contacto, pie de página y anunciantes.',
       files: [
         {
           name: 'general',
+          icon: 'settings',
           label: 'Datos generales',
           file: '/src/data/ajustes.json',
           fields: [
@@ -347,6 +403,7 @@ const buildConfig = (origin: string) => ({
         },
         {
           name: 'anunciantes',
+          icon: 'campaign',
           label: 'Anunciantes',
           file: '/src/data/anunciantes.json',
           media_folder: '/public/anunciantes',
