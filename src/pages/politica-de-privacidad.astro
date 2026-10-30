@@ -1,86 +1,13 @@
 ---
 import Legal from '../layouts/Legal.astro';
-import { SITE } from '../config';
+// Texto editable desde el panel: Páginas → privacidad
+import { Content, frontmatter } from '../data/privacidad.md';
 ---
 <Legal
-  title="Política de privacidad"
+  title={frontmatter.titulo}
   description="Cómo trata Rumbo Mercante los datos personales de sus visitantes."
   path="/politica-de-privacidad/"
-  updated="29 de octubre de 2026"
+  updated={frontmatter.actualizado ?? ''}
 >
-  <p>
-    En <strong>{SITE.name}</strong> respetamos tu privacidad. Esta política explica qué datos personales se recogen
-    cuando visitas el sitio, con qué finalidad y cuáles son tus derechos.
-  </p>
-
-  <h2>1. Responsable del tratamiento</h2>
-  <p>
-    El responsable del sitio web y del tratamiento de los datos es {SITE.author}, titular de {SITE.name}. Puedes
-    contactar en <a href={`mailto:${SITE.contactEmail}`}>{SITE.contactEmail}</a> o a través de la
-    <a href="/contacto/">página de contacto</a>.
-  </p>
-
-  <h2>2. Datos que se recogen</h2>
-  <ul>
-    <li>
-      <strong>Formulario de contacto:</strong> nombre, correo electrónico, perfil profesional (opcional) y el contenido
-      de tu mensaje.
-    </li>
-    <li>
-      <strong>Datos técnicos de navegación:</strong> el proveedor de alojamiento puede registrar datos técnicos
-      básicos (dirección IP, tipo de navegador, páginas visitadas) con fines de seguridad y funcionamiento del servicio.
-    </li>
-    <li>
-      <strong>Herramientas interactivas:</strong> la calculadora de horas de descanso y el conversor funcionan
-      íntegramente en tu navegador. Los datos que introduces no se envían a ningún servidor; si se guardan, lo hacen
-      solo en el almacenamiento local de tu propio dispositivo.
-    </li>
-  </ul>
-
-  <h2>3. Finalidad</h2>
-  <p>Los datos se utilizan exclusivamente para:</p>
-  <ul>
-    <li>Responder a tus consultas, sugerencias o solicitudes de plantillas.</li>
-    <li>Mejorar el contenido del sitio en función de las necesidades de los lectores.</li>
-    <li>Garantizar la seguridad y el correcto funcionamiento de la web.</li>
-  </ul>
-  <p>No se venden ni se ceden datos personales a terceros con fines comerciales.</p>
-
-  <h2>4. Base legal</h2>
-  <p>
-    El tratamiento de los datos del formulario se basa en tu consentimiento, que otorgas al marcar la casilla
-    correspondiente antes de enviar el mensaje. Puedes retirarlo en cualquier momento.
-  </p>
-
-  <h2>5. Conservación</h2>
-  <p>
-    Los mensajes se conservan durante el tiempo necesario para atender tu solicitud y, como máximo, mientras no
-    solicites su supresión.
-  </p>
-
-  <h2>6. Proveedores de servicios</h2>
-  <p>
-    El sitio se aloja en Vercel Inc. Las fuentes tipográficas se cargan desde Google Fonts. Si el formulario de contacto
-    utiliza un servicio de envío de formularios, este actuará como encargado del tratamiento únicamente para hacer
-    llegar tu mensaje. Estos proveedores pueden procesar datos técnicos según sus propias políticas de privacidad.
-  </p>
-
-  <h2>7. Cookies</h2>
-  <p>
-    {SITE.name} no utiliza cookies publicitarias ni de seguimiento. Si en el futuro se incorporan herramientas de
-    analítica, esta política se actualizará y se solicitará tu consentimiento cuando sea necesario.
-  </p>
-
-  <h2>8. Tus derechos</h2>
-  <p>
-    Puedes solicitar el acceso, rectificación, supresión, limitación u oposición al tratamiento de tus datos, así como
-    su portabilidad, escribiendo a <a href={`mailto:${SITE.contactEmail}`}>{SITE.contactEmail}</a>. También tienes
-    derecho a presentar una reclamación ante la autoridad de protección de datos de tu país.
-  </p>
-
-  <h2>9. Cambios en esta política</h2>
-  <p>
-    Esta política puede actualizarse para reflejar cambios en el sitio o en la normativa. La fecha de la última
-    actualización figura al inicio de esta página.
-  </p>
+  <Content />
 </Legal>

@@ -1,8 +1,13 @@
 {
+  "nombre": "Rumbo Mercante",
+  "eslogan": "Recursos, herramientas y conocimiento operativo para el día a día de la gente de mar.",
+  "descripcion": "Plantillas, checklists, guías técnicas, inglés marítimo y experiencia real a bordo para cadetes, pasantes y oficiales de la marina mercante.",
   "autor": "Jhonny Castorani",
   "cargo": "2do Oficial de Máquinas",
   "resumenAutor": "Graduado hace 8 años, con experiencia consolidada a bordo de buques de pasajeros.",
   "correoContacto": "contacto@rumbomercante.com",
   "formspreeId": "",
-  "blogAnterior": "https://ingmaritima.blogspot.com"
+  "blogAnterior": "https://ingmaritima.blogspot.com",
+  "fraseFooter": "Bienvenido a tu guardia diaria. Nos vemos a bordo.",
+  "lemaFooter": "10°36′N · 66°56′W — Rumbo fijo, mar abierto"
 }

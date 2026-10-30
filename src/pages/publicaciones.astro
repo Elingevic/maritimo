@@ -2,16 +2,17 @@
 import Base from '../layouts/Base.astro';
 import PageHero from '../components/PageHero.astro';
 import ArticleCard from '../components/ArticleCard.astro';
-import { CATEGORIES } from '../config';
+import { CATEGORIES, PAGINAS } from '../config';
+const T = PAGINAS.publicaciones ?? {};
 import { getArticulos } from '../lib/utils';
 
 const all = await getArticulos();
 ---
 <Base title="Todas las publicaciones" description="Todas las guías, recursos, artículos y novedades de Rumbo Mercante.">
   <PageHero
-    kicker="Bitácora"
-    title="Todas las publicaciones"
-    lead="Guías, recursos, artículos y novedades, de la más reciente a la más antigua."
+    kicker={T.kicker}
+    title={T.titulo || 'Todas las publicaciones'}
+    lead={T.texto}
     icon="book"
     breadcrumbs={[{ href: '/publicaciones/', label: 'Publicaciones' }]}
   />

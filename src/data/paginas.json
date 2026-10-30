@@ -1,0 +1,19 @@
+{
+  "contacto": {
+    "kicker": "Contacto",
+    "titulo": "Hablemos a bordo",
+    "texto": "¿Una sugerencia, una consulta técnica o una plantilla que te haría la vida más fácil? Escríbeme. Leo todos los mensajes.",
+    "consejo": "Cuanto más concreta sea tu solicitud (tipo de buque, equipo, marca o situación), más útil será el recurso que se publique."
+  },
+  "anunciate": {
+    "kicker": "Anunciantes",
+    "titulo": "Llega a la gente de mar",
+    "texto": "Rumbo Mercante reúne a estudiantes, cadetes, pasantes y oficiales de cubierta y máquinas. Si tu empresa ofrece formación, empleo, equipamiento o servicios marítimos, este es tu espacio.",
+    "condiciones": "Solo se aceptan anunciantes relacionados con el sector marítimo y que aporten valor a la gente de mar."
+  },
+  "publicaciones": {
+    "kicker": "Bitácora",
+    "titulo": "Todas las publicaciones",
+    "texto": "Guías, recursos, artículos y novedades, de la más reciente a la más antigua."
+  }
+}

@@ -2,15 +2,16 @@
 import Base from '../layouts/Base.astro';
 import PageHero from '../components/PageHero.astro';
 import Icon from '../components/Icon.astro';
-import { SITE } from '../config';
+import { SITE, PAGINAS } from '../config';
+const T = PAGINAS.contacto ?? {};
 
 const action = SITE.formspreeId ? `https://formspree.io/f/${SITE.formspreeId}` : '';
 ---
 <Base title="Contacto" description="Envía sugerencias, consultas o solicitudes de plantillas específicas a Rumbo Mercante.">
   <PageHero
-    kicker="Contacto"
-    title="Hablemos a bordo"
-    lead="¿Una sugerencia, una consulta técnica o una plantilla que te haría la vida más fácil? Escríbeme. Leo todos los mensajes."
+    kicker={T.kicker}
+    title={T.titulo || 'Contacto'}
+    lead={T.texto}
     icon="mail"
     breadcrumbs={[{ href: '/contacto/', label: 'Contacto' }]}
   />
@@ -93,13 +94,14 @@ const action = SITE.formspreeId ? `https://formspree.io/f/${SITE.formspreeId}` :
             <li><Icon name="radar" size={20} /> Espacios para anunciantes</li>
           </ul>
         </div>
-        <div class="note">
-          <Icon name="lightbulb" size={22} />
-          <p>
-            <strong>Consejo:</strong> cuanto más concreta sea tu solicitud (tipo de buque, equipo, marca o situación),
-            más útil será el recurso que se publique.
-          </p>
-        </div>
+        {T.consejo && (
+          <div class="note">
+            <Icon name="lightbulb" size={22} />
+            <p>
+              <strong>Consejo:</strong> {T.consejo}
+            </p>
+          </div>
+        )}
         <p class="direct">
           También puedes escribir directamente a <a href={`mailto:${SITE.contactEmail}`}>{SITE.contactEmail}</a>
         </p>

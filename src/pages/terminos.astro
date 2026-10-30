@@ -1,82 +1,13 @@
 ---
 import Legal from '../layouts/Legal.astro';
-import { SITE } from '../config';
+// Texto editable desde el panel: Páginas → terminos
+import { Content, frontmatter } from '../data/terminos.md';
 ---
 <Legal
-  title="Términos de uso"
+  title={frontmatter.titulo}
   description="Condiciones de uso del sitio web y de los recursos descargables de Rumbo Mercante."
   path="/terminos/"
-  updated="29 de octubre de 2026"
+  updated={frontmatter.actualizado ?? ''}
 >
-  <p>
-    Al acceder y utilizar <strong>{SITE.name}</strong> aceptas estos términos de uso. Si no estás de acuerdo con ellos,
-    te rogamos que no utilices el sitio.
-  </p>
-
-  <h2>1. Objeto del sitio</h2>
-  <p>
-    {SITE.name} ofrece contenidos divulgativos, guías, plantillas, checklists y herramientas orientadas a la gente de
-    mar. El acceso es gratuito y no requiere registro.
-  </p>
-
-  <h2>2. Carácter orientativo del contenido</h2>
-  <p>
-    Todo el contenido tiene carácter <strong>informativo y formativo</strong>. Se basa en experiencia profesional y en
-    normativa de referencia (OMI, STCW, MARPOL, SOLAS, MLC 2006, entre otras), pero:
-  </p>
-  <ul>
-    <li>
-      No sustituye al Sistema de Gestión de la Seguridad (SMS) de tu compañía, a los manuales e instrucciones del
-      fabricante, ni a las órdenes de tus superiores a bordo.
-    </li>
-    <li>
-      No sustituye la formación oficial ni los certificados exigidos por la administración marítima competente.
-    </li>
-    <li>
-      La normativa cambia con el tiempo; comprueba siempre la versión vigente aplicable a tu buque, bandera y
-      compañía.
-    </li>
-  </ul>
-  <p>
-    El uso que hagas de la información y de las herramientas es bajo tu propia responsabilidad. {SITE.name} no se
-    responsabiliza de los daños derivados de su aplicación sin la debida verificación.
-  </p>
-
-  <h2>3. Uso de los recursos descargables</h2>
-  <p>Las plantillas, checklists y demás recursos descargables pueden utilizarse libremente para:</p>
-  <ul>
-    <li>Uso personal y profesional a bordo o en tierra.</li>
-    <li>Uso interno dentro de un buque, departamento o compañía, adaptándolos a tus necesidades.</li>
-    <li>Uso formativo en academias y centros de formación, citando la fuente.</li>
-  </ul>
-  <p>No está permitido:</p>
-  <ul>
-    <li>Vender, revender o redistribuir los recursos como producto propio.</li>
-    <li>Publicarlos en otros sitios web sin autorización expresa o sin citar la fuente con enlace a {SITE.name}.</li>
-    <li>Eliminar las referencias de autoría cuando se compartan sin modificar.</li>
-  </ul>
-
-  <h2>4. Propiedad intelectual</h2>
-  <p>
-    Los textos, diseños, logotipos y recursos originales de este sitio son propiedad de {SITE.author}, salvo que se
-    indique lo contrario. Las marcas, normas y documentos de terceros citados pertenecen a sus respectivos titulares.
-  </p>
-
-  <h2>5. Enlaces externos</h2>
-  <p>
-    El sitio puede incluir enlaces a páginas de terceros. {SITE.name} no controla ni se responsabiliza de su
-    contenido ni de sus políticas.
-  </p>
-
-  <h2>6. Modificaciones</h2>
-  <p>
-    Estos términos pueden actualizarse en cualquier momento. La versión vigente será siempre la publicada en esta
-    página.
-  </p>
-
-  <h2>7. Contacto</h2>
-  <p>
-    Para cualquier consulta sobre estos términos, escribe a
-    <a href={`mailto:${SITE.contactEmail}`}>{SITE.contactEmail}</a> o usa la <a href="/contacto/">página de contacto</a>.
-  </p>
+  <Content />
 </Legal>

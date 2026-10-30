@@ -6,8 +6,164 @@
     <meta name="robots" content="noindex, nofollow" />
     <title>Panel · Rumbo Mercante</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <style>
+      #acceso {
+        position: fixed;
+        inset: 0;
+        z-index: 10;
+        display: none;
+        place-items: center;
+        padding: 1.5rem;
+        background: radial-gradient(ellipse at 20% 0%, #1f4675, transparent 60%), #0a1a2f;
+        font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        color: #142133;
+      }
+      #acceso.visible { display: grid; }
+      #acceso * { box-sizing: border-box; }
+      #acceso .caja {
+        width: 100%;
+        max-width: 380px;
+        background: #fbf9f4;
+        border-radius: 18px;
+        padding: 2.2rem 1.9rem;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+      }
+      #acceso .marca { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 1.6rem; }
+      #acceso .marca img { width: 44px; height: 44px; }
+      #acceso .marca b { font-family: Georgia, serif; font-size: 1.4rem; color: #0a1a2f; }
+      #acceso .marca i { color: #9c7426; }
+      #acceso h1 { font-size: 1.15rem; margin: 0 0 0.3rem; color: #0a1a2f; }
+      #acceso .sub { margin: 0 0 1.4rem; color: #607089; font-size: 0.92rem; }
+      #acceso label { display: block; font-size: 0.85rem; font-weight: 600; margin: 0 0 0.35rem; color: #0f2540; }
+      #acceso input {
+        width: 100%;
+        font: inherit;
+        font-size: 1rem;
+        padding: 0.8rem 0.9rem;
+        border: 1px solid #e2dccd;
+        border-radius: 10px;
+        background: #fff;
+        margin-bottom: 1rem;
+      }
+      #acceso input:focus { outline: none; border-color: #2a6496; box-shadow: 0 0 0 3px rgba(42, 100, 150, 0.15); }
+      #acceso button {
+        width: 100%;
+        font: inherit;
+        font-weight: 600;
+        font-size: 1rem;
+        padding: 0.9rem;
+        border: 0;
+        border-radius: 999px;
+        background: #c99a3c;
+        color: #06111f;
+        cursor: pointer;
+        margin-top: 0.3rem;
+      }
+      #acceso button:hover { background: #e5c07b; }
+      #acceso button:disabled { opacity: 0.6; cursor: wait; }
+      #acceso .error {
+        display: none;
+        background: #fbf0ea;
+        border: 1px solid #f0d2c4;
+        color: #8a3520;
+        padding: 0.7rem 0.9rem;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+      }
+      #acceso .error.visible { display: block; }
+      #acceso .volver { display: block; text-align: center; margin-top: 1.3rem; font-size: 0.85rem; color: #607089; }
+    </style>
   </head>
   <body>
-    <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js"></script>
+    <div id="acceso" role="dialog" aria-labelledby="titulo-acceso">
+      <form class="caja" id="form-acceso">
+        <div class="marca"><img src="/favicon.svg" alt="" /><b>Rumbo <i>Mercante</i></b></div>
+        <h1 id="titulo-acceso">Panel de administración</h1>
+        <p class="sub">Entra para editar la web.</p>
+        <p class="error" id="error" role="alert"></p>
+        <label for="usuario">Usuario</label>
+        <input id="usuario" name="usuario" autocomplete="username" autocapitalize="none" required />
+        <label for="clave">Contraseña</label>
+        <input id="clave" name="clave" type="password" autocomplete="current-password" required />
+        <button type="submit" id="entrar">Entrar</button>
+        <a class="volver" href="/">← Volver a la web</a>
+      </form>
+    </div>
+
+    <script>
+      // Acceso con usuario y contraseña. Al entrar se guarda la sesión donde el panel (Sveltia CMS)
+      // la busca al arrancar, así el panel abre directamente sin pedir cuentas de GitHub.
+      (() => {
+        const KEY = 'sveltia-cms.user';
+        const acceso = document.getElementById('acceso');
+        const form = document.getElementById('form-acceso');
+        const error = document.getElementById('error');
+        const boton = document.getElementById('entrar');
+
+        const sesionGuardada = () => {
+          try {
+            const u = JSON.parse(localStorage.getItem(KEY) || 'null');
+            return u && typeof u.token === 'string' && u.token ? u : null;
+          } catch {
+            return null;
+          }
+        };
+
+        const mostrarError = (texto) => {
+          error.textContent = texto;
+          error.classList.add('visible');
+        };
+
+        let iniciado = false;
+        const abrirPanel = () => {
+          if (iniciado) return;
+          iniciado = true;
+          acceso.classList.remove('visible');
+          const s = document.createElement('script');
+          s.src = 'https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js';
+          document.body.appendChild(s);
+          // Al cerrar sesión en el panel se borra la sesión: se vuelve a esta pantalla
+          setInterval(() => {
+            if (!sesionGuardada()) location.reload();
+          }, 1500);
+        };
+
+        const pedirAcceso = () => {
+          localStorage.removeItem(KEY);
+          acceso.classList.add('visible');
+          document.getElementById('usuario').focus();
+        };
+
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          error.classList.remove('visible');
+          boton.disabled = true;
+          boton.textContent = 'Entrando…';
+          try {
+            const res = await fetch('/api/auth', {
+              method: 'POST',
+              headers: { Accept: 'application/json' },
+              body: new URLSearchParams(new FormData(form)),
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok || !data.token) throw new Error(data.error || 'No se pudo entrar. Inténtalo de nuevo.');
+            localStorage.setItem(KEY, JSON.stringify({ backendName: 'github', token: data.token }));
+            abrirPanel();
+          } catch (err) {
+            mostrarError(err.message);
+            boton.disabled = false;
+            boton.textContent = 'Entrar';
+          }
+        });
+
+        // Si ya hay una sesión válida, se abre el panel directamente
+        const u = sesionGuardada();
+        if (!u) return pedirAcceso();
+        fetch('/api/sesion', { headers: { Authorization: `token ${u.token}` } })
+          .then((r) => (r.ok ? abrirPanel() : pedirAcceso()))
+          .catch(pedirAcceso);
+      })();
+    </script>
   </body>
 </html>

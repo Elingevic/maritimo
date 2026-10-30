@@ -2,16 +2,17 @@
 import Base from '../layouts/Base.astro';
 import PageHero from '../components/PageHero.astro';
 import Icon from '../components/Icon.astro';
-import { ADS_FREE } from '../config';
+import { ADS_FREE, PAGINAS } from '../config';
+const T = PAGINAS.anunciate ?? {};
 ---
 <Base
   title="Anúnciate"
   description="Da a conocer tu empresa a estudiantes, cadetes y oficiales de la marina mercante. Espacios gratuitos durante el lanzamiento."
 >
   <PageHero
-    kicker="Anunciantes"
-    title="Llega a la gente de mar"
-    lead="Rumbo Mercante reúne a estudiantes, cadetes, pasantes y oficiales de cubierta y máquinas. Si tu empresa ofrece formación, empleo, equipamiento o servicios marítimos, este es tu espacio."
+    kicker={T.kicker}
+    title={T.titulo || 'Anúnciate'}
+    lead={T.texto}
     icon="radar"
     breadcrumbs={[{ href: '/anunciate/', label: 'Anúnciate' }]}
   >
@@ -61,7 +62,7 @@ import { ADS_FREE } from '../config';
         </li>
       </ol>
       <p class="fine">
-        Solo se aceptan anunciantes relacionados con el sector marítimo y que aporten valor a la gente de mar.
+        {T.condiciones}
         {ADS_FREE && ' Los espacios gratuitos del lanzamiento son limitados; más adelante se ofrecerán planes de pago.'}
       </p>
     </div>

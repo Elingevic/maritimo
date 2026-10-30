@@ -1,0 +1,110 @@
+{
+  "secciones": [
+    {
+      "id": "recursos",
+      "nombre": "Recursos",
+      "corto": "Recursos",
+      "kicker": "Plantillas · Checklists · Herramientas",
+      "descripcion": "Material operativo listo para usar: plantillas, checklists imprimibles, glosarios de inglés técnico y calculadoras para el trabajo a bordo.",
+      "subcategorias": [
+        {
+          "id": "plantillas",
+          "nombre": "Plantillas",
+          "descripcion": "Registros, formatos y hojas de cálculo listos para descargar y usar."
+        },
+        {
+          "id": "checklists",
+          "nombre": "Checklists",
+          "descripcion": "Listas de verificación imprimibles para embarques, guardias y operaciones."
+        },
+        {
+          "id": "ingles-maritimo",
+          "nombre": "Inglés marítimo",
+          "descripcion": "Glosarios y frases técnicas para comunicarte a bordo."
+        },
+        {
+          "id": "herramientas",
+          "nombre": "Herramientas",
+          "descripcion": "Calculadoras y conversores interactivos que funcionan en el móvil."
+        }
+      ]
+    },
+    {
+      "id": "guias",
+      "nombre": "Guías y Operaciones",
+      "corto": "Guías",
+      "kicker": "Sala de máquinas · Cubierta · Procedimientos",
+      "descripcion": "Explicaciones claras del funcionamiento real de los sistemas a bordo y de los procedimientos que se aplican en cada guardia.",
+      "subcategorias": [
+        {
+          "id": "sala-de-maquinas",
+          "nombre": "Sala de máquinas",
+          "descripcion": "Motores, auxiliares, combustible y el día a día del departamento de máquinas."
+        },
+        {
+          "id": "cubierta",
+          "nombre": "Cubierta y navegación",
+          "descripcion": "Guardias de puente, maniobras y operaciones de cubierta."
+        },
+        {
+          "id": "seguridad",
+          "nombre": "Seguridad",
+          "descripcion": "Procedimientos, permisos de trabajo, emergencias y prevención."
+        },
+        {
+          "id": "formacion",
+          "nombre": "Formación y estudios",
+          "descripcion": "Cómo elegir especialidad, estudiar y prepararte para los exámenes."
+        }
+      ]
+    },
+    {
+      "id": "vida-a-bordo",
+      "nombre": "Vida a Bordo y Desarrollo Profesional",
+      "corto": "Vida a Bordo",
+      "kicker": "Embarques · Carrera · Bienestar",
+      "descripcion": "Lo que no se enseña en la academia: primer embarque, fatiga, convivencia, ascensos y cómo trazar tu carrera por mérito propio.",
+      "subcategorias": [
+        {
+          "id": "primer-embarque",
+          "nombre": "Primer embarque",
+          "descripcion": "Todo lo que necesitas saber antes y durante tus prácticas a bordo."
+        },
+        {
+          "id": "bienestar",
+          "nombre": "Bienestar y fatiga",
+          "descripcion": "Descanso, salud, convivencia y vida lejos de casa."
+        },
+        {
+          "id": "carrera-profesional",
+          "nombre": "Carrera profesional",
+          "descripcion": "Ascensos, títulos, tipos de buque y cómo crecer por mérito propio."
+        }
+      ]
+    },
+    {
+      "id": "actualidad",
+      "nombre": "Actualidad Marítima",
+      "corto": "Actualidad",
+      "kicker": "Normativa · Industria · Novedades",
+      "descripcion": "Novedades del sector, cambios normativos (OMI, STCW, MARPOL, MLC) y lo que significan en la práctica para la gente de mar.",
+      "subcategorias": [
+        {
+          "id": "normativa",
+          "nombre": "Normativa",
+          "descripcion": "OMI, STCW, MARPOL, SOLAS y MLC explicados en la práctica."
+        },
+        {
+          "id": "industria",
+          "nombre": "Industria",
+          "descripcion": "Tendencias del sector, combustibles, tecnología y empleo."
+        },
+        {
+          "id": "novedades",
+          "nombre": "Novedades del sitio",
+          "descripcion": "Nuevos recursos, anuncios y novedades de Rumbo Mercante."
+        }
+      ]
+    }
+  ]
+}

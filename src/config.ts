@@ -3,9 +3,18 @@
 // aquí se combinan con lo que es estructura del sitio (secciones, subcategorías).
 import ajustesJson from './data/ajustes.json';
 import anunciosJson from './data/anunciantes.json';
+import seccionesJson from './data/secciones.json';
+import inicioJson from './data/inicio.json';
+import paginasJson from './data/paginas.json';
+
+// Textos de la portada y de las páginas fijas (Páginas → Inicio / Contacto / Anúnciate…).
+// Se leen como opcionales porque el panel omite los campos vacíos.
+export const INICIO = inicioJson as Partial<Record<keyof typeof inicioJson, string>>;
+type PaginaTextos = Partial<Record<'kicker' | 'titulo' | 'texto' | 'consejo' | 'condiciones', string>>;
+export const PAGINAS = paginasJson as Partial<Record<'contacto' | 'anunciate' | 'publicaciones', PaginaTextos>>;
 
 // El panel omite los campos opcionales vacíos, así que se leen como opcionales
-const ajustes = ajustesJson as Partial<Record<'autor' | 'cargo' | 'resumenAutor' | 'correoContacto' | 'formspreeId' | 'blogAnterior', string>>;
+const ajustes = ajustesJson as Partial<Record<string, string>>;
 const anuncios = anunciosJson as {
   anunciosGratis?: boolean;
   huecos?: number;
@@ -13,10 +22,11 @@ const anuncios = anunciosJson as {
 };
 
 export const SITE = {
-  name: 'Rumbo Mercante',
-  slogan: 'Recursos, herramientas y conocimiento operativo para el día a día de la gente de mar.',
-  description:
-    'Plantillas, checklists, guías técnicas, inglés marítimo y experiencia real a bordo para cadetes, pasantes y oficiales de la marina mercante.',
+  name: ajustes.nombre || 'Rumbo Mercante',
+  slogan: ajustes.eslogan || '',
+  description: ajustes.descripcion || '',
+  footerPhrase: ajustes.fraseFooter || '',
+  footerMotto: ajustes.lemaFooter || '',
   author: ajustes.autor || 'Jhonny Castorani',
   authorRole: ajustes.cargo || '',
   authorSummary: ajustes.resumenAutor || '',
@@ -47,70 +57,52 @@ export interface Category {
   color: string;
 }
 
-export const CATEGORIES: Category[] = [
-  {
-    id: 'recursos',
-    subcategories: [
-      { id: 'plantillas', name: 'Plantillas', description: 'Registros, formatos y hojas de cálculo listos para descargar y usar.' },
-      { id: 'checklists', name: 'Checklists', description: 'Listas de verificación imprimibles para embarques, guardias y operaciones.' },
-      { id: 'ingles-maritimo', name: 'Inglés marítimo', description: 'Glosarios y frases técnicas para comunicarte a bordo.' },
-      { id: 'herramientas', name: 'Herramientas', description: 'Calculadoras y conversores interactivos que funcionan en el móvil.' },
-    ],
-    name: 'Recursos',
-    short: 'Recursos',
-    kicker: 'Plantillas · Checklists · Herramientas',
-    description:
-      'Material operativo listo para usar: plantillas, checklists imprimibles, glosarios de inglés técnico y calculadoras para el trabajo a bordo.',
-    icon: 'toolbox',
-    color: 'var(--c-recursos)',
-  },
-  {
-    id: 'guias',
-    subcategories: [
-      { id: 'sala-de-maquinas', name: 'Sala de máquinas', description: 'Motores, auxiliares, combustible y el día a día del departamento de máquinas.' },
-      { id: 'cubierta', name: 'Cubierta y navegación', description: 'Guardias de puente, maniobras y operaciones de cubierta.' },
-      { id: 'seguridad', name: 'Seguridad', description: 'Procedimientos, permisos de trabajo, emergencias y prevención.' },
-      { id: 'formacion', name: 'Formación y estudios', description: 'Cómo elegir especialidad, estudiar y prepararte para los exámenes.' },
-    ],
-    name: 'Guías y Operaciones',
-    short: 'Guías',
-    kicker: 'Sala de máquinas · Cubierta · Procedimientos',
-    description:
-      'Explicaciones claras del funcionamiento real de los sistemas a bordo y de los procedimientos que se aplican en cada guardia.',
-    icon: 'compass',
-    color: 'var(--c-guias)',
-  },
-  {
-    id: 'vida-a-bordo',
-    subcategories: [
-      { id: 'primer-embarque', name: 'Primer embarque', description: 'Todo lo que necesitas saber antes y durante tus prácticas a bordo.' },
-      { id: 'bienestar', name: 'Bienestar y fatiga', description: 'Descanso, salud, convivencia y vida lejos de casa.' },
-      { id: 'carrera-profesional', name: 'Carrera profesional', description: 'Ascensos, títulos, tipos de buque y cómo crecer por mérito propio.' },
-    ],
-    name: 'Vida a Bordo y Desarrollo Profesional',
-    short: 'Vida a Bordo',
-    kicker: 'Embarques · Carrera · Bienestar',
-    description:
-      'Lo que no se enseña en la academia: primer embarque, fatiga, convivencia, ascensos y cómo trazar tu carrera por mérito propio.',
-    icon: 'anchor',
-    color: 'var(--c-vida)',
-  },
-  {
-    id: 'actualidad',
-    subcategories: [
-      { id: 'normativa', name: 'Normativa', description: 'OMI, STCW, MARPOL, SOLAS y MLC explicados en la práctica.' },
-      { id: 'industria', name: 'Industria', description: 'Tendencias del sector, combustibles, tecnología y empleo.' },
-      { id: 'novedades', name: 'Novedades del sitio', description: 'Nuevos recursos, anuncios y novedades de Rumbo Mercante.' },
-    ],
-    name: 'Actualidad Marítima',
-    short: 'Actualidad',
-    kicker: 'Normativa · Industria · Novedades',
-    description:
-      'Novedades del sector, cambios normativos (OMI, STCW, MARPOL, MLC) y lo que significan en la práctica para la gente de mar.',
-    icon: 'radar',
-    color: 'var(--c-actualidad)',
-  },
-];
+// Textos editables desde el panel (Páginas → Secciones y subcategorías).
+// El icono y el color de cada sección son fijos y dependen de su id.
+const SECTION_STYLE: Record<CategoryId, Pick<Category, 'icon' | 'color'>> = {
+  recursos: { icon: 'toolbox', color: 'var(--c-recursos)' },
+  guias: { icon: 'compass', color: 'var(--c-guias)' },
+  'vida-a-bordo': { icon: 'anchor', color: 'var(--c-vida)' },
+  actualidad: { icon: 'radar', color: 'var(--c-actualidad)' },
+};
+const ORDER = Object.keys(SECTION_STYLE) as CategoryId[];
+
+const slugify = (s: string) =>
+  s
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+
+type SeccionJson = {
+  id?: string;
+  nombre?: string;
+  corto?: string;
+  kicker?: string;
+  descripcion?: string;
+  subcategorias?: { id?: string; nombre?: string; descripcion?: string }[];
+};
+const seccionesData = (seccionesJson as { secciones?: SeccionJson[] }).secciones ?? [];
+
+export const CATEGORIES: Category[] = ORDER.map((id) => {
+  const s = seccionesData.find((x) => x.id === id) ?? {};
+  const seen = new Set<string>();
+  const subcategories = (s.subcategorias ?? [])
+    .filter((sub) => sub.nombre?.trim())
+    // Si el editor no escribe un identificador, se genera a partir del nombre
+    .map((sub) => ({ id: slugify(sub.id?.trim() || sub.nombre!), name: sub.nombre!.trim(), description: sub.descripcion?.trim() ?? '' }))
+    .filter((sub) => sub.id && !seen.has(sub.id) && seen.add(sub.id));
+  return {
+    id,
+    name: s.nombre?.trim() || id,
+    short: s.corto?.trim() || s.nombre?.trim() || id,
+    kicker: s.kicker?.trim() ?? '',
+    description: s.descripcion?.trim() ?? '',
+    subcategories,
+    ...SECTION_STYLE[id],
+  };
+});
 
 export const getCategory = (id: string) => CATEGORIES.find((c) => c.id === id);
 export const getSubcategory = (cat: string, sub: string) =>

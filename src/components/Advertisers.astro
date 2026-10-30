@@ -1,6 +1,6 @@
 ---
 import Icon from './Icon.astro';
-import { ADVERTISERS, AD_SLOTS, ADS_FREE } from '../config';
+import { ADVERTISERS, AD_SLOTS, ADS_FREE, INICIO as T } from '../config';
 
 const empty = Math.max(0, AD_SLOTS - ADVERTISERS.length);
 ---
@@ -8,12 +8,9 @@ const empty = Math.max(0, AD_SLOTS - ADVERTISERS.length);
   <div class="container">
     <div class="ads-head reveal">
       <div>
-        <div class="kicker">Anunciantes</div>
-        <h2 id="ads-title">Empresas que acompañan a la gente de mar</h2>
-        <p>
-          Academias, centros de formación, navieras, agencias de tripulación, tiendas de equipamiento y servicios
-          marítimos que apoyan este proyecto.
-        </p>
+        {T.anunciantesKicker && <div class="kicker">{T.anunciantesKicker}</div>}
+        <h2 id="ads-title">{T.anunciantesTitulo}</h2>
+        {T.anunciantesTexto && <p>{T.anunciantesTexto}</p>}
       </div>
       {ADS_FREE && (
         <div class="promo">

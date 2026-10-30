@@ -14,9 +14,11 @@ const year = new Date().getFullYear();
     <div class="footer-brand">
       <Logo light size={44} />
       <p>{SITE.slogan}</p>
-      <p class="footer-sign">
-        <Icon name="anchor" size={16} /> Bienvenido a tu guardia diaria. Nos vemos a bordo.
-      </p>
+      {SITE.footerPhrase && (
+        <p class="footer-sign">
+          <Icon name="anchor" size={16} /> {SITE.footerPhrase}
+        </p>
+      )}
     </div>
 
     <div>
@@ -53,7 +55,7 @@ const year = new Date().getFullYear();
 
   <div class="container footer-bottom">
     <span>© {year} {SITE.name}. Todos los derechos reservados.</span>
-    <span class="coords">10°36′N · 66°56′W — Rumbo fijo, mar abierto</span>
+    {SITE.footerMotto && <span class="coords">{SITE.footerMotto}</span>}
   </div>
 </footer>
 

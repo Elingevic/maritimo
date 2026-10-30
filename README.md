@@ -25,17 +25,22 @@ El contenido se edita desde **https://maritimo-pi.vercel.app/admin/** con [Svelt
 | Qué se edita en el panel | Archivo |
 |---|---|
 | Publicaciones | `src/content/articulos/*.md` (imágenes en `public/img/articulos/`, descargas en `public/descargas/`) |
-| Autor, cargo, correo de contacto, Formspree | `src/data/ajustes.json` |
+| Portada | `src/data/inicio.json` |
+| Secciones y subcategorías | `src/data/secciones.json` (icono y color de cada sección en `src/config.ts`) |
+| Nosotros | `src/data/nosotros.md` |
+| Contacto, Anúnciate, Publicaciones | `src/data/paginas.json` |
+| Privacidad y Términos | `src/data/privacidad.md`, `src/data/terminos.md` |
+| Nombre, eslogan, autor, contacto, pie | `src/data/ajustes.json` |
 | Anunciantes (logos en `public/anunciantes/`) | `src/data/anunciantes.json` |
-| Página "Nosotros" | `src/data/nosotros.md` |
 
-La configuración del panel se **genera en el build** desde `src/pages/admin/config.yml.ts`, a partir de las secciones y subcategorías de `src/config.ts`. Si añades una subcategoría ahí, aparece sola en el panel.
+La configuración del panel se **genera en el build** desde `src/pages/admin/config.yml.ts`. Las opciones de subcategoría salen de `secciones.json`, así que una subcategoría creada en el panel aparece en el desplegable tras el siguiente despliegue. Un artículo cuya subcategoría ya no existe no rompe el build: se omite con un aviso en el registro.
 
 ### Acceso con usuario y contraseña
 
-El editor **no necesita cuenta de GitHub**. Entra con usuario y contraseña (por defecto `admin` / `admin`), y el servidor hace los cambios en GitHub con un token guardado en Vercel:
+El editor **no necesita cuenta de GitHub**. En `/admin/` ve una pantalla propia de usuario y contraseña (por defecto `admin` / `admin`), y el servidor hace los cambios en GitHub con un token guardado en Vercel:
 
-- `src/pages/api/auth.ts`: formulario de acceso. Entrega al panel una sesión firmada que caduca a los 30 días.
+- `public/admin/index.html`: pantalla de acceso. Guarda la sesión donde Sveltia CMS la busca al arrancar (`sveltia-cms.user`), así el panel abre ya identificado.
+- `src/pages/api/auth.ts`: comprueba usuario y contraseña. Entrega una sesión firmada que caduca a los 30 días. `src/pages/api/sesion.ts` comprueba si sigue siendo válida.
 - `src/pages/api/gh/[...path].ts`: intermediario hacia la API de GitHub. Comprueba la sesión y añade el token. El token nunca llega al navegador.
 
 **Configuración en Vercel** (*Settings → Environment Variables*, entorno *Production*, y después *Redeploy*):
@@ -56,7 +61,7 @@ Crea un `.md` en `src/content/articulos/`. El nombre del archivo es la URL. La s
 ---
 title: 'Título del artículo'
 description: 'Resumen de una o dos frases.'
-subcategory: sala-de-maquinas  # una de las subcategorías de src/config.ts
+subcategory: sala-de-maquinas  # una de las subcategorías de src/data/secciones.json
 type: guia                     # guia | checklist | plantilla | glosario | articulo | noticia
 date: 2026-11-05
 tags: [motor, mantenimiento]
@@ -73,7 +78,7 @@ Texto en Markdown. Las casillas se escriben así:
 
 ## Secciones y subcategorías
 
-Están en `CATEGORIES`, dentro de `src/config.ts`. Los `id` de las subcategorías deben ser únicos en todo el sitio, porque de ellos se deduce la sección de cada artículo.
+Sus textos están en `src/data/secciones.json` (editable desde el panel); `src/config.ts` les añade el icono y el color. Los `id` de las subcategorías deben ser únicos en todo el sitio, porque de ellos se deduce la sección de cada artículo.
 
 ## Formulario de contacto
 

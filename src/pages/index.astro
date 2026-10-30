@@ -3,7 +3,7 @@ import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
 import ArticleCard from '../components/ArticleCard.astro';
 import Advertisers from '../components/Advertisers.astro';
-import { SITE, CATEGORIES, getCategory, getSubcategory } from '../config';
+import { CATEGORIES, INICIO as T, getCategory, getSubcategory } from '../config';
 import { getArticulos, articleUrl, formatDate, readingTime, TYPE_LABEL } from '../lib/utils';
 
 const all = await getArticulos();
@@ -11,28 +11,29 @@ const featured = all.filter((a) => a.data.featured).slice(0, 3);
 const featuredIds = new Set(featured.map((a) => a.id));
 // Últimos posts: los más recientes que no aparecen ya en destacados
 const latest = all.filter((a) => !featuredIds.has(a.id)).slice(0, 3);
+
+// Imagen del hero: la original tiene versión reducida para móvil; una subida desde el panel se usa tal cual
+const heroImg = T.heroImagen || '/img/hero.jpg';
+const heroImgSm = heroImg === '/img/hero.jpg' ? '/img/hero-sm.jpg' : heroImg;
 ---
 <Base>
   <!-- 1. HERO: eslogan + imagen de marina mercante -->
   <section class="hero on-dark">
     <picture class="hero-img" aria-hidden="true">
-      <source media="(max-width: 900px)" srcset="/img/hero-sm.jpg" />
-      <img src="/img/hero.jpg" alt="" fetchpriority="high" decoding="async" />
+      <source media="(max-width: 900px)" srcset={heroImgSm} />
+      <img src={heroImg} alt="" fetchpriority="high" decoding="async" />
     </picture>
     <div class="hero-shade" aria-hidden="true"></div>
 
     <div class="container hero-inner">
-      <div class="kicker">{SITE.name} · Cubierta y Máquinas</div>
+      {T.heroKicker && <div class="kicker">{T.heroKicker}</div>}
       <h1>
-        Recursos, herramientas y conocimiento operativo para el día a día de la <em>gente de mar.</em>
+        {T.heroTitulo} {T.heroTituloDestacado && <em>{T.heroTituloDestacado}</em>}
       </h1>
-      <p class="hero-lead">
-        Plantillas, checklists, guías técnicas e inglés marítimo escritos desde la experiencia real a bordo. Para el
-        cadete que pisa un buque por primera vez y para el oficial que quiere seguir creciendo.
-      </p>
+      {T.heroTexto && <p class="hero-lead">{T.heroTexto}</p>}
       <div class="hero-actions">
-        <a href="#secciones" class="btn btn-brass"><Icon name="compass" /> Explorar secciones</a>
-        <a href="/nosotros/" class="btn btn-ghost">Conoce la historia <Icon name="arrow" /></a>
+        <a href="#secciones" class="btn btn-brass"><Icon name="compass" /> {T.heroBoton1 || 'Explorar secciones'}</a>
+        <a href="/nosotros/" class="btn btn-ghost">{T.heroBoton2 || 'Conoce la historia'} <Icon name="arrow" /></a>
       </div>
     </div>
 
@@ -46,12 +47,9 @@ const latest = all.filter((a) => !featuredIds.has(a.id)).slice(0, 3);
     <div class="container">
       <div class="section-head reveal">
         <div>
-          <div class="kicker">Carta de navegación</div>
-          <h2>Cuatro secciones, un mismo rumbo</h2>
-          <p>
-            Cada sección se divide en subcategorías que te llevan directo a los artículos que necesitas, estés en tierra
-            preparando tu embarque o en plena guardia.
-          </p>
+          {T.seccionesKicker && <div class="kicker">{T.seccionesKicker}</div>}
+          <h2>{T.seccionesTitulo}</h2>
+          {T.seccionesTexto && <p>{T.seccionesTexto}</p>}
         </div>
       </div>
 
@@ -85,8 +83,8 @@ const latest = all.filter((a) => !featuredIds.has(a.id)).slice(0, 3);
       <div class="container">
         <div class="section-head reveal">
           <div>
-            <div class="kicker">Destacados</div>
-            <h2>Lo más útil para empezar</h2>
+            {T.destacadosKicker && <div class="kicker">{T.destacadosKicker}</div>}
+            <h2>{T.destacadosTitulo}</h2>
           </div>
         </div>
         <div class="featured">
@@ -126,8 +124,8 @@ const latest = all.filter((a) => !featuredIds.has(a.id)).slice(0, 3);
     <div class="container">
       <div class="section-head reveal">
         <div>
-          <div class="kicker">Bitácora</div>
-          <h2>Últimas publicaciones</h2>
+          {T.ultimosKicker && <div class="kicker">{T.ultimosKicker}</div>}
+          <h2>{T.ultimosTitulo}</h2>
         </div>
         <a href="/publicaciones/" class="link-arrow">Ver todas las publicaciones <span>→</span></a>
       </div>
