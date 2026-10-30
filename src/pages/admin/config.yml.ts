@@ -19,14 +19,17 @@ const subcategoryOptions = CATEGORIES.flatMap((c) =>
   c.subcategories.map((s) => ({ label: `${c.short} › ${s.name}`, value: s.id })),
 );
 
-const config = {
+const buildConfig = (origin: string) => ({
   backend: {
     name: 'github',
     repo: 'Elingevic/maritimo',
-    branch: 'main',
-    // Inicio de sesión con GitHub mediante las funciones de src/pages/api/
-    base_url: 'https://maritimo-pi.vercel.app',
+    branch: process.env.CMS_BRANCH || 'main',
+    // Acceso con usuario y contraseña (src/pages/api/auth.ts). El panel no habla con GitHub
+    // directamente: pasa por /api/gh, que añade el token guardado en Vercel.
+    base_url: origin,
     auth_endpoint: 'api/auth',
+    auth_methods: ['oauth'],
+    api_root: `${origin}/api/gh`,
     commit_messages: {
       create: 'Panel: crea {{collection}} "{{slug}}"',
       update: 'Panel: actualiza {{collection}} "{{slug}}"',
@@ -35,11 +38,24 @@ const config = {
       deleteMedia: 'Panel: elimina "{{path}}"',
     },
   },
-  site_url: 'https://maritimo-pi.vercel.app',
-  display_url: 'https://maritimo-pi.vercel.app',
+  site_url: origin,
+  display_url: origin,
   logo: { src: '/favicon.svg' },
   media_folder: '/public/img/articulos',
   public_folder: '/img/articulos',
+  // Las fotos se convierten a WebP y se reducen antes de subirlas: pesan menos y no superan
+  // el límite de ~4,5 MB por petición de las funciones de Vercel (el archivo viaja en base64).
+  media_libraries: {
+    default: {
+      config: {
+        max_file_size: 3_000_000,
+        transformations: {
+          raster_image: { format: 'webp', quality: 82, width: 1920, height: 1920 },
+          svg: { optimize: true },
+        },
+      },
+    },
+  },
   output: { omit_empty_optional_fields: true },
   slug: { encoding: 'ascii', clean_accents: true, sanitize_replacement: '-' },
   collections: [
@@ -232,9 +248,10 @@ const config = {
       ],
     },
   ],
-};
+});
 
-export const GET: APIRoute = () =>
-  new Response(JSON.stringify(config, null, 2), {
+// En producción el origen es `site` (astro.config.mjs); en desarrollo, localhost.
+export const GET: APIRoute = ({ url }) =>
+  new Response(JSON.stringify(buildConfig(url.origin), null, 2), {
     headers: { 'Content-Type': 'text/yaml; charset=utf-8' },
   });

@@ -1,36 +1,30 @@
 import type { APIRoute } from 'astro';
-import { CSRF_COOKIE, getCredentials, outputHTML, pickScope } from '../../lib/oauth';
+import { createSession, getConfig, loginForm, outputHTML, safeEqual } from '../../lib/oauth';
 
 export const prerender = false;
 
-// Paso 1: el panel abre esta URL en una ventana emergente y se redirige a GitHub para autorizar.
-export const GET: APIRoute = ({ url }) => {
-  const creds = getCredentials();
-  if (!creds) {
-    return outputHTML(url.origin, {
-      error:
-        'El inicio de sesión con GitHub aún no está configurado en Vercel (faltan GITHUB_CLIENT_ID y GITHUB_CLIENT_SECRET). Usa "Iniciar sesión con token".',
-      errorCode: 'MISCONFIGURED_CLIENT',
-    });
+// El panel abre esta página en una ventana emergente al pulsar el botón de acceso.
+export const GET: APIRoute = () => {
+  if (!getConfig().githubToken) {
+    return loginForm('El panel aún no está conectado a GitHub: falta la variable GITHUB_TOKEN en Vercel.', 503);
   }
-  const provider = url.searchParams.get('provider') ?? 'github';
-  if (provider !== 'github') {
-    return outputHTML(url.origin, { error: `Proveedor no soportado: ${provider}`, errorCode: 'UNSUPPORTED_BACKEND' });
+  return loginForm();
+};
+
+export const POST: APIRoute = async ({ request, url }) => {
+  const cfg = getConfig();
+  if (!cfg.githubToken) {
+    return loginForm('El panel aún no está conectado a GitHub: falta la variable GITHUB_TOKEN en Vercel.', 503);
   }
+  const form = await request.formData().catch(() => null);
+  const usuario = String(form?.get('usuario') ?? '').trim();
+  const clave = String(form?.get('clave') ?? '');
 
-  const state = crypto.randomUUID().replaceAll('-', '');
-  const authorize = new URL('https://github.com/login/oauth/authorize');
-  authorize.searchParams.set('client_id', creds.clientId);
-  authorize.searchParams.set('redirect_uri', `${url.origin}/api/callback`);
-  authorize.searchParams.set('scope', pickScope(url.searchParams.get('scope')));
-  authorize.searchParams.set('state', state);
-
-  return new Response(null, {
-    status: 302,
-    headers: {
-      Location: authorize.toString(),
-      'Cache-Control': 'no-store',
-      'Set-Cookie': `${CSRF_COOKIE}=${state}; Path=/api; Max-Age=600; HttpOnly; Secure; SameSite=Lax`,
-    },
-  });
+  const [okUser, okPass] = await Promise.all([safeEqual(usuario, cfg.user), safeEqual(clave, cfg.password)]);
+  if (!okUser || !okPass) {
+    // Pequeña espera para frenar intentos repetidos
+    await new Promise((r) => setTimeout(r, 1200));
+    return loginForm('Usuario o contraseña incorrectos.', 401);
+  }
+  return outputHTML(url.origin, { token: await createSession() });
 };

@@ -31,27 +31,22 @@ El contenido se edita desde **https://maritimo-pi.vercel.app/admin/** con [Svelt
 
 La configuración del panel se **genera en el build** desde `src/pages/admin/config.yml.ts`, a partir de las secciones y subcategorías de `src/config.ts`. Si añades una subcategoría ahí, aparece sola en el panel.
 
-### Dar acceso a un editor
+### Acceso con usuario y contraseña
 
-1. El editor necesita una cuenta de GitHub.
-2. En GitHub, ve a **maritimo → Settings → Collaborators → Add people** y añade su usuario (rol *Write*).
-3. Con eso ya puede entrar con **"Iniciar sesión con un token de acceso"**.
+El editor **no necesita cuenta de GitHub**. Entra con usuario y contraseña (por defecto `admin` / `admin`), y el servidor hace los cambios en GitHub con un token guardado en Vercel:
 
-### Activar el botón "Iniciar sesión con GitHub" (recomendado)
+- `src/pages/api/auth.ts`: formulario de acceso. Entrega al panel una sesión firmada que caduca a los 30 días.
+- `src/pages/api/gh/[...path].ts`: intermediario hacia la API de GitHub. Comprueba la sesión y añade el token. El token nunca llega al navegador.
 
-Es más cómodo que el token. Se configura una sola vez:
+**Configuración en Vercel** (*Settings → Environment Variables*, entorno *Production*, y después *Redeploy*):
 
-1. En GitHub, ve a **Settings → Developer settings → OAuth Apps → New OAuth App**.
-   - *Application name*: `Rumbo Mercante CMS`
-   - *Homepage URL*: `https://maritimo-pi.vercel.app`
-   - *Authorization callback URL*: `https://maritimo-pi.vercel.app/api/callback`
-2. Copia el **Client ID** y genera un **Client secret**.
-3. En Vercel, abre el proyecto y ve a **Settings → Environment Variables**. Añade `GITHUB_CLIENT_ID` y `GITHUB_CLIENT_SECRET` (entorno *Production*).
-4. Vuelve a desplegar (**Deployments → ⋯ → Redeploy**).
+| Variable | Valor |
+|---|---|
+| `GITHUB_TOKEN` | **Obligatoria.** Token *fine-grained* de GitHub: *Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token*. En *Repository access* elige **Only select repositories → maritimo** y en *Permissions → Contents* elige **Read and write**. |
+| `ADMIN_USER` | Opcional. Por defecto `admin`. |
+| `ADMIN_PASSWORD` | Opcional. Por defecto `admin`. **Cámbiala pronto**: cualquiera que la adivine puede editar la web. Al cambiarla se cierran las sesiones abiertas. |
 
-Las funciones que gestionan el inicio de sesión están en `src/pages/api/auth.ts` y `src/pages/api/callback.ts` (por eso el proyecto usa el adaptador `@astrojs/vercel`; el resto del sitio es estático).
-
-> Si cambias de dominio, actualiza `site` en `astro.config.mjs`, `base_url` y `site_url` en `src/pages/admin/config.yml.ts` y la *callback URL* de la OAuth App.
+Las fotos se convierten a WebP (máx. 1920 px) antes de subirse, con un tope de 3 MB por archivo, por el límite de 4,5 MB de las funciones de Vercel.
 
 ## Publicar un artículo a mano (sin panel)
 

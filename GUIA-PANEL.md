@@ -10,10 +10,9 @@ Guárdala en favoritos (también funciona desde el móvil).
 
 ## 1. Entrar
 
-Necesitas una cuenta de GitHub con permiso sobre el repositorio de la web (te lo da Víctor).
-
-- **Opción A: "Iniciar sesión con GitHub".** Si ya está activada, basta con pulsar el botón y aceptar.
-- **Opción B: "Iniciar sesión con un token de acceso".** Pulsa el botón y sigue el enlace que aparece para crear el token en GitHub. Copia el token, pégalo en el panel y listo. El navegador lo recuerda, así que solo lo haces una vez por dispositivo.
+1. Abre https://maritimo-pi.vercel.app/admin/ y pulsa el botón de acceso. Aunque diga "GitHub", **no necesitas cuenta de GitHub**.
+2. En la ventana que se abre, escribe el **usuario** y la **contraseña** que te dio Víctor.
+3. La sesión dura 30 días en ese dispositivo.
 
 ## 2. Publicar algo nuevo
 
